@@ -45,7 +45,7 @@ The project follows a layered architecture:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/telegram-football-assistant.git
+git clone https://github.com/kralur/telegram-football-assistant.git
 cd telegram-football-assistant
 
 2. Create virtual environment:
