@@ -34,6 +34,12 @@ Additionally, many football information platforms lack personalization and do no
 ### 1.3 Problem Statement
 
 This section defines the main problem addressed in this project and formulates the objectives of the developed system.
+The analysis of existing football information systems shows that, despite their functionality, many platforms fail to provide a simple and intuitive way for users to access football-related information. Complex interfaces, advertising overload, and rigid interaction mechanisms reduce usability and limit accessibility for a broad range of users.
+
+There is a need for a lightweight solution that allows users to receive football information quickly without installing additional applications or navigating complex interfaces. The increasing popularity of messaging platforms creates an opportunity to deliver such functionality directly within a familiar communication environment.
+
+The problem addressed in this project is the lack of a football information system that combines structured football data with natural language interaction in a lightweight messaging platform. To solve this problem, this project proposes the development of a Telegram-based football assistant that integrates external football data APIs and AI-powered natural language processing to provide clear and user-friendly responses.
+
 
 ---
 
