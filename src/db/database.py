@@ -15,22 +15,24 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS favorites (
             user_id INTEGER,
+            team_id INTEGER,
             team_name TEXT,
-            PRIMARY KEY (user_id, team_name)
+            PRIMARY KEY (user_id, team_id)
         )
     """)
+
 
     conn.commit()
     conn.close()
 
 
-def add_favorite(user_id: int, team_name: str):
+def add_favorite(user_id: int, team_id: int, team_name: str):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT OR IGNORE INTO favorites (user_id, team_name) VALUES (?, ?)",
-        (user_id, team_name)
+        "INSERT OR IGNORE INTO favorites (user_id, team_id, team_name) VALUES (?, ?, ?)",
+        (user_id, team_id, team_name)
     )
 
     conn.commit()
@@ -42,11 +44,13 @@ def get_favorites(user_id: int):
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT team_name FROM favorites WHERE user_id = ?",
+        "SELECT team_id, team_name FROM favorites WHERE user_id = ?",
         (user_id,)
     )
 
     rows = cursor.fetchall()
     conn.close()
 
-    return [row[0] for row in rows]
+    return rows  # [(team_id, team_name), ...]
+
+

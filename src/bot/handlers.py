@@ -1,111 +1,40 @@
 from aiogram import Router
 from aiogram.filters import CommandStart
-from aiogram.types import Message
-from src.services.football_api import get_today_fixtures
-from src.services.football_api import get_today_fixtures, get_fixtures_by_date
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from datetime import datetime, timedelta
-from src.services.football_api import get_fixtures_by_date
-from src.services.football_api import get_league_standings
-from src.db.database import add_favorite, get_favorites
+import uuid
 
+from src.services.football_api import (
+    get_today_fixtures,
+    get_fixtures_by_date,
+    get_league_standings,
+    get_next_fixtures_by_team_id,
+    get_team_id_by_name
+)
+from src.db.database import add_favorite, get_favorites
+from src.services.ai_service import analyze_match
 
 router = Router()
 
+# ---------------- TEMP CACHE FOR MATCHES ----------------
+MATCH_CACHE = {}
+
+# ---------------- START ----------------
 @router.message(CommandStart())
 async def start_handler(message: Message):
     await message.answer(
-        "👋 Привет! Я футбольный ассистент.\n"
-        "Выбери действие ниже 👇",
+        "👋 Привет! Я футбольный ассистент.\nВыбери действие 👇",
         reply_markup=menu_keyboard
     )
 
-@router.message(lambda msg: msg.text == "/today")
-async def today_matches(message: Message):
-    try:
-        fixtures = get_today_fixtures()
-
-        if not fixtures:
-            await message.answer("Сегодня матчей не найдено ⚽")
-            return
-
-        text = "⚽ Матчи сегодня:\n\n"
-
-        for match in fixtures[:5]:
-            home = match["teams"]["home"]["name"]
-            away = match["teams"]["away"]["name"]
-            date = match["fixture"]["date"][:16].replace("T", " ")
-
-            text += f"{home} vs {away}\n🕒 {date}\n\n"
-
-        await message.answer(text)
-
-    except Exception as e:
-        await message.answer("Ошибка при получении матчей 😕")
-
-@router.message(lambda msg: msg.text.startswith("/date"))
-async def matches_by_date(message: Message):
-    try:
-        parts = message.text.split()
-
-        if len(parts) != 2:
-            await message.answer("Используй формат:\n/date YYYY-MM-DD")
-            return
-
-        date = parts[1]
-
-        fixtures = get_fixtures_by_date(date)
-
-        if not fixtures:
-            await message.answer(f"На {date} матчей не найдено ⚽")
-            return
-
-        text = f"⚽ Матчи на {date}:\n\n"
-
-        for match in fixtures[:5]:
-            home = match["teams"]["home"]["name"]
-            away = match["teams"]["away"]["name"]
-            time = match["fixture"]["date"][11:16]
-
-            text += f"{home} vs {away}\n🕒 {time}\n\n"
-
-        await message.answer(text)
-
-    except Exception:
-        await message.answer("Ошибка при получении матчей 😕")
-
-@router.message(lambda msg: msg.text.startswith("/fav"))
-async def add_favorite_handler(message: Message):
-    parts = message.text.split(maxsplit=1)
-
-    if len(parts) != 2:
-        await message.answer("Используй:\n/fav TEAM_NAME")
-        return
-
-    team_name = parts[1]
-    user_id = message.from_user.id
-
-    add_favorite(user_id, team_name)
-    await message.answer(f"⭐ {team_name} добавлена в избранное!")
-
-
+# ---------------- MENUS ----------------
 menu_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(text="⚽ Матчи сегодня", callback_data="today")
-        ],
-        [
-            InlineKeyboardButton(text="📅 Матчи по дате", callback_data="date")
-        ],
-        [
-            InlineKeyboardButton(text="🏆 Таблицы лиг", callback_data="standings")
-        ],
-        [
-            InlineKeyboardButton(text="⭐ Избранные команды", callback_data="favorites")
-        ],
-        [
-            InlineKeyboardButton(text="ℹ️ Помощь", callback_data="help")
-        ],
+        [InlineKeyboardButton(text="⚽ Матчи сегодня", callback_data="today")],
+        [InlineKeyboardButton(text="📅 Матчи по дате", callback_data="date")],
+        [InlineKeyboardButton(text="🏆 Таблицы лиг", callback_data="standings")],
+        [InlineKeyboardButton(text="⭐ Избранные команды", callback_data="favorites")],
+        [InlineKeyboardButton(text="⭐ Матчи избранных", callback_data="fav_matches")],
     ]
 )
 
@@ -115,9 +44,7 @@ date_keyboard = InlineKeyboardMarkup(
             InlineKeyboardButton(text="📅 Сегодня", callback_data="date_today"),
             InlineKeyboardButton(text="⏭ Завтра", callback_data="date_tomorrow"),
         ],
-        [
-            InlineKeyboardButton(text="🗓 Ввести дату", callback_data="date_manual")
-        ],
+        [InlineKeyboardButton(text="🗓 Ввести дату", callback_data="date_manual")],
     ]
 )
 
@@ -134,44 +61,48 @@ standings_keyboard = InlineKeyboardMarkup(
     ]
 )
 
-
-
+# ---------------- TODAY MATCHES ----------------
 @router.callback_query(lambda c: c.data == "today")
-async def today_callback(callback):
-    from src.services.football_api import get_today_fixtures
-
+async def today_matches(callback):
     fixtures = get_today_fixtures()
 
     if not fixtures:
         await callback.message.answer("Сегодня матчей не найдено ⚽")
         return
 
-    text = "⚽ Матчи сегодня:\n\n"
-
     for match in fixtures[:5]:
-        home = match["teams"]["home"]["name"]
-        away = match["teams"]["away"]["name"]
-        time = match["fixture"]["date"][11:16]
+        match_id = str(uuid.uuid4())[:8]
 
-        text += f"{home} vs {away}\n🕒 {time}\n\n"
+        MATCH_CACHE[match_id] = {
+            "home": match["teams"]["home"]["name"],
+            "away": match["teams"]["away"]["name"],
+            "league": match["league"]["name"],
+            "date": match["fixture"]["date"][:16].replace("T", " ")
+        }
 
-    await callback.message.answer(text)
+        text = (
+            f"🏟 {MATCH_CACHE[match_id]['league']}\n"
+            f"{MATCH_CACHE[match_id]['home']} vs {MATCH_CACHE[match_id]['away']}\n"
+            f"🕒 {MATCH_CACHE[match_id]['date']}"
+        )
 
+        keyboard = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text="🤖 Анализ матча",
+                        callback_data=f"analyze:{match_id}"
+                    )
+                ]
+            ]
+        )
+
+        await callback.message.answer(text, reply_markup=keyboard)
+
+# ---------------- DATE MATCHES ----------------
 @router.callback_query(lambda c: c.data == "date")
 async def date_menu(callback):
-    await callback.message.answer(
-        "📅 Выбери дату:",
-        reply_markup=date_keyboard
-    )
-
-@router.callback_query(lambda c: c.data == "help")
-async def help_callback(callback):
-    await callback.message.answer(
-        "ℹ️ Доступные функции:\n\n"
-        "⚽ Матчи сегодня\n"
-        "📅 Матчи по дате\n\n"
-        "Пример:\n/date 2026-01-25"
-    )
+    await callback.message.answer("📅 Выбери дату:", reply_markup=date_keyboard)
 
 @router.callback_query(lambda c: c.data == "date_today")
 async def date_today(callback):
@@ -185,53 +116,7 @@ async def date_tomorrow(callback):
 
 @router.callback_query(lambda c: c.data == "date_manual")
 async def date_manual(callback):
-    await callback.message.answer(
-        "🗓 Введи дату в формате:\n/date YYYY-MM-DD\n\nНапример:\n/date 2026-01-25"
-    )
-
-@router.callback_query(lambda c: c.data == "standings")
-async def standings_menu(callback):
-    await callback.message.answer(
-        "🏆 Выбери лигу:",
-        reply_markup=standings_keyboard
-    )
-
-@router.callback_query(lambda c: c.data == "pl")
-async def pl_table(callback):
-    await send_standings(callback, 39, "Premier League")
-
-
-@router.callback_query(lambda c: c.data == "laliga")
-async def laliga_table(callback):
-    await send_standings(callback, 140, "La Liga")
-
-
-@router.callback_query(lambda c: c.data == "seriea")
-async def seriea_table(callback):
-    await send_standings(callback, 135, "Serie A")
-
-
-@router.callback_query(lambda c: c.data == "bundesliga")
-async def bundesliga_table(callback):
-    await send_standings(callback, 78, "Bundesliga")
-
-@router.callback_query(lambda c: c.data == "favorites")
-async def show_favorites(callback):
-    user_id = callback.from_user.id
-    favorites = get_favorites(user_id)
-
-    if not favorites:
-        await callback.message.answer("⭐ У тебя пока нет избранных команд.")
-        return
-
-    text = "⭐ Твои избранные команды:\n\n"
-    for team in favorites:
-        text += f"• {team}\n"
-
-    await callback.message.answer(text)
-
-
-
+    await callback.message.answer("Введи дату:\n/date YYYY-MM-DD")
 
 async def send_matches_by_date(callback, date: str):
     fixtures = get_fixtures_by_date(date)
@@ -240,35 +125,169 @@ async def send_matches_by_date(callback, date: str):
         await callback.message.answer(f"На {date} матчей не найдено ⚽")
         return
 
-    text = f"⚽ Матчи на {date}:\n\n"
-
     for match in fixtures[:5]:
-        home = match["teams"]["home"]["name"]
-        away = match["teams"]["away"]["name"]
-        time = match["fixture"]["date"][11:16]
+        match_id = str(uuid.uuid4())[:8]
 
-        text += f"{home} vs {away}\n🕒 {time}\n\n"
+        MATCH_CACHE[match_id] = {
+            "home": match["teams"]["home"]["name"],
+            "away": match["teams"]["away"]["name"],
+            "league": match["league"]["name"],
+            "date": match["fixture"]["date"][:16].replace("T", " ")
+        }
+
+        text = (
+            f"🏟 {MATCH_CACHE[match_id]['league']}\n"
+            f"{MATCH_CACHE[match_id]['home']} vs {MATCH_CACHE[match_id]['away']}\n"
+            f"🕒 {MATCH_CACHE[match_id]['date']}"
+        )
+
+        keyboard = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text="🤖 Анализ матча",
+                        callback_data=f"analyze:{match_id}"
+                    )
+                ]
+            ]
+        )
+
+        await callback.message.answer(text, reply_markup=keyboard)
+
+# ---------------- FAVORITES ----------------
+@router.message(lambda msg: msg.text.startswith("/fav"))
+async def add_favorite_handler(message: Message):
+    parts = message.text.split(maxsplit=1)
+    if len(parts) != 2:
+        await message.answer("Используй:\n/fav TEAM_NAME")
+        return
+
+    team_name = parts[1]
+    team_id = get_team_id_by_name(team_name)
+
+    if not team_id:
+        await message.answer("⚠️ Команда не найдена.")
+        return
+
+    add_favorite(message.from_user.id, team_id, team_name)
+    await message.answer(f"⭐ {team_name} добавлена в избранное!")
+
+@router.callback_query(lambda c: c.data == "favorites")
+async def show_favorites(callback):
+    favorites = get_favorites(callback.from_user.id)
+    if not favorites:
+        await callback.message.answer("⭐ У тебя нет избранных команд.")
+        return
+
+    text = "⭐ Твои избранные команды:\n\n"
+    for _, team_name in favorites:
+        text += f"• {team_name}\n"
 
     await callback.message.answer(text)
+
+@router.callback_query(lambda c: c.data == "fav_matches")
+async def favorite_matches(callback):
+    favorites = get_favorites(callback.from_user.id)
+
+    if not favorites:
+        await callback.message.answer("⭐ У тебя нет избранных команд.")
+        return
+
+    found = False
+
+    for team_id, team_name in favorites:
+        fixtures = get_next_fixtures_by_team_id(team_id)
+
+        if not fixtures:
+            await callback.message.answer(
+                f"⚠️ Нет ближайших матчей для {team_name}"
+            )
+            continue
+
+        found = True
+        match = fixtures[0]
+        match_id = str(uuid.uuid4())[:8]
+
+        MATCH_CACHE[match_id] = {
+            "home": match["teams"]["home"]["name"],
+            "away": match["teams"]["away"]["name"],
+            "league": match["league"]["name"],
+            "date": match["fixture"]["date"][:16].replace("T", " ")
+        }
+
+        text = (
+            f"🏟 {MATCH_CACHE[match_id]['league']}\n"
+            f"{MATCH_CACHE[match_id]['home']} vs {MATCH_CACHE[match_id]['away']}\n"
+            f"🕒 {MATCH_CACHE[match_id]['date']}"
+        )
+
+        keyboard = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text="🤖 Анализ матча",
+                        callback_data=f"analyze:{match_id}"
+                    )
+                ]
+            ]
+        )
+
+        await callback.message.answer(text, reply_markup=keyboard)
+
+    if not found:
+        await callback.message.answer(
+            "⚠️ Для избранных команд нет ближайших матчей."
+        )
+
+# ---------------- STANDINGS ----------------
+@router.callback_query(lambda c: c.data == "standings")
+async def standings_menu(callback):
+    await callback.message.answer("🏆 Выбери лигу:", reply_markup=standings_keyboard)
+
+@router.callback_query(lambda c: c.data == "pl")
+async def pl(callback): await send_standings(callback, 39, "Premier League")
+
+@router.callback_query(lambda c: c.data == "laliga")
+async def laliga(callback): await send_standings(callback, 140, "La Liga")
+
+@router.callback_query(lambda c: c.data == "seriea")
+async def seriea(callback): await send_standings(callback, 135, "Serie A")
+
+@router.callback_query(lambda c: c.data == "bundesliga")
+async def bundesliga(callback): await send_standings(callback, 78, "Bundesliga")
 
 async def send_standings(callback, league_id: int, title: str):
     standings = get_league_standings(league_id)
-
     if not standings:
-        await callback.message.answer(
-            f"🏆 {title}\n\nДанные таблицы пока недоступны ⚠️"
-        )
+        await callback.message.answer("Таблица недоступна ⚠️")
         return
 
     text = f"🏆 {title} (Top 5)\n\n"
-
     for team in standings[:5]:
-        pos = team["rank"]
-        name = team["team"]["name"]
-        pts = team["points"]
-
-        text += f"{pos}. {name} — {pts} points ⭐\n"
-        text += "\nЧтобы добавить в избранное:\n⭐ /fav TEAM_NAME"
+        text += f"{team['rank']}. {team['team']['name']} — {team['points']} pts\n"
 
     await callback.message.answer(text)
+
+# ---------------- AI ANALYSIS ----------------
+@router.callback_query(lambda c: c.data.startswith("analyze:"))
+async def analyze_callback(callback):
+    match_id = callback.data.split(":")[1]
+    match = MATCH_CACHE.get(match_id)
+
+    if not match:
+        await callback.message.answer("⚠️ Данные матча устарели.")
+        return
+
+    await callback.message.answer("🤖 Анализирую матч...")
+
+    try:
+        analysis = analyze_match(
+            match["home"],
+            match["away"],
+            match["league"],
+            match["date"]
+        )
+        await callback.message.answer(f"🤖 Анализ матча\n\n{analysis}")
+    except Exception as e:
+        await callback.message.answer(f"❌ Ошибка анализа:\n{e}")
 
