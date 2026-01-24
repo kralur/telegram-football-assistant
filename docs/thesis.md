@@ -14,10 +14,22 @@ The relevance of this work is explained by the increasing demand for lightweight
 ### 1.1 Football Information Systems
 
 This section describes existing football information platforms, including mobile applications, websites, and messaging-based solutions.
+Football information systems are digital platforms designed to provide users with access to football-related data such as match schedules, results, league standings, and player statistics. These systems are commonly implemented as mobile applications, web platforms, or integrated services within sports media websites.
+
+Popular football information systems focus on delivering real-time updates and comprehensive statistical data. They often integrate multiple data sources and provide advanced features such as live notifications, historical match analysis, and team performance tracking.
+
+In recent years, the demand for instant access to sports information has increased significantly. Users expect fast, accurate, and easily accessible information across different devices and platforms. As a result, football information systems have become an essential tool for football fans worldwide.
+
 
 ### 1.2 Limitations of Existing Solutions
 
 This section analyzes the disadvantages of existing football platforms, such as interface complexity, advertising overload, and limited personalization.
+Despite the wide availability of football information platforms, many existing solutions have several limitations that negatively affect user experience. Mobile applications and websites often feature complex interfaces overloaded with advertisements and unnecessary functionality, which makes it difficult for users to quickly access the required information.
+
+Another limitation of existing systems is the reliance on predefined menus and rigid interaction patterns. Users are required to navigate through multiple screens or use specific commands to retrieve information, which can be inconvenient, especially for non-technical users.
+
+Additionally, many football information platforms lack personalization and do not adapt responses to individual user preferences. This creates a gap between the growing user demand for simple, conversational interaction and the capabilities of existing solutions.
+
 
 ### 1.3 Problem Statement
 
