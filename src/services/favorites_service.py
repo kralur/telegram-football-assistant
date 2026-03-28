@@ -1,16 +1,12 @@
 class FavoritesService:
-
     def __init__(self, repository):
         self.repository = repository
 
-    # ---------- ADD ----------
-    def add_team(self, user_id: int, team_name: str):
-        self.repository.add(user_id, team_name)
+    def add_team(self, user_id: int, team_name: str, team_id: int | None = None):
+        self.repository.add(user_id, team_name=team_name, team_id=team_id)
 
-    # ---------- REMOVE ----------
-    def remove_team(self, user_id: int, team_name: str):
-        self.repository.remove(user_id, team_name)
+    def remove_team(self, user_id: int, team_name: str | None = None, team_id: int | None = None):
+        self.repository.remove(user_id, team_name=team_name, team_id=team_id)
 
-    # ---------- GET ----------
     def get_user_favorites(self, user_id: int):
         return self.repository.get(user_id)

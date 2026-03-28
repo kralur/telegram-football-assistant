@@ -1,23 +1,23 @@
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
-# ---- Определяем корень проекта ----
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
-# ---- Явно указываем путь к .env ----
 ENV_PATH = BASE_DIR / ".env"
 
-# ---- Загружаем переменные ----
 load_dotenv(dotenv_path=ENV_PATH)
 
-# ---- Переменные окружения ----
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 FOOTBALL_API_KEY = os.getenv("FOOTBALL_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-# ---- Проверка токена ----
+CACHE_TTL_MATCHES = int(os.getenv("CACHE_TTL_MATCHES", "300"))
+CACHE_TTL_STANDINGS = int(os.getenv("CACHE_TTL_STANDINGS", "900"))
+CACHE_TTL_SCORERS = int(os.getenv("CACHE_TTL_SCORERS", "900"))
+CACHE_TTL_SEARCH = int(os.getenv("CACHE_TTL_SEARCH", "600"))
+SCHEDULER_INTERVAL_SECONDS = int(os.getenv("SCHEDULER_INTERVAL_SECONDS", "30"))
+DEFAULT_TIMEZONE = os.getenv("DEFAULT_TIMEZONE", "UTC")
+
 if not TELEGRAM_BOT_TOKEN:
-    raise ValueError(
-        f"TELEGRAM_BOT_TOKEN not found. Checked path: {ENV_PATH}"
-    )
+    raise ValueError(f"TELEGRAM_BOT_TOKEN not found. Checked path: {ENV_PATH}")

@@ -1,118 +1,82 @@
+import logging
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
+
+from src.config.settings import SCHEDULER_INTERVAL_SECONDS
 
 
 class SchedulerService:
-
-    def __init__(self, bot, match_service, users_repository, favorites_repository):
+    def __init__(self, bot, match_service, users_repository, notify_service):
         self.bot = bot
         self.match_service = match_service
         self.users_repository = users_repository
-        self.favorites_repository = favorites_repository
+        self.notify_service = notify_service
         self.scheduler = AsyncIOScheduler()
+        self.logger = logging.getLogger("football_bot")
 
     def start(self):
-        # Daily summary every day at 09:00
+        self.scheduler.add_job(
+            self.sync_notifications,
+            "interval",
+            seconds=SCHEDULER_INTERVAL_SECONDS,
+            max_instances=1,
+        )
         self.scheduler.add_job(
             self.daily_summary,
-            CronTrigger(hour=9, minute=0)
+            CronTrigger(hour=9, minute=0),
+            max_instances=1,
         )
-
-        # Check reminders every minute
-        self.scheduler.add_job(
-            self.check_reminders,
-            "interval",
-            minutes=1
-        )
-
         self.scheduler.start()
 
-    # ============================
-    # DAILY SUMMARY
-    # ============================
+    async def sync_notifications(self):
+        try:
+            for user_id in self.users_repository.get_all():
+                _, _, reminders_enabled = self.users_repository.get_settings(user_id)
+                if not reminders_enabled:
+                    continue
+                await self.notify_service.sync_favorites_for_user(user_id)
+
+            await self.notify_service.process_notifications()
+        except Exception as exc:
+            self.logger.exception("Scheduler sync failed: %s", exc)
 
     async def daily_summary(self):
-        users = self.users_repository.get_all()
+        try:
+            matches = await self.match_service.get_today_matches()
+            if not matches:
+                return
 
-        for user_id in users:
-            timezone, daily_enabled, _ = self.users_repository.get_settings(user_id)
-
-            if not daily_enabled:
-                continue
-
-            tz = ZoneInfo(timezone)
-            today = datetime.now(tz).strftime("%Y-%m-%d")
-
-            fixtures = await self.match_service.api_client.get_fixtures_by_date(today)
-
-            if not fixtures:
-                continue
-
-            text = "⚽ Today's Matches\n\n"
-
-            for match in fixtures[:5]:
-                home = match["teams"]["home"]["name"]
-                away = match["teams"]["away"]["name"]
-                league = match["league"]["name"]
-                date = match["fixture"]["date"][:16].replace("T", " ")
-
-                text += f"{home} vs {away}\n{league}\n{date}\n\n"
-
-            try:
-                await self.bot.send_message(user_id, text)
-            except Exception:
-                continue
-
-    # ============================
-    # REMINDERS
-    # ============================
-
-    async def check_reminders(self):
-        users = self.users_repository.get_all()
-
-        for user_id in users:
-            timezone, _, reminders_enabled = self.users_repository.get_settings(user_id)
-
-            if not reminders_enabled:
-                continue
-
-            tz = ZoneInfo(timezone)
-            now = datetime.now(tz)
-
-            favorites = self.favorites_repository.get(user_id)
-
-            for team_name in favorites:
-                teams = await self.match_service.search_team(team_name)
-                if not teams:
+            for user_id in self.users_repository.get_all():
+                timezone, daily_enabled, _ = self.users_repository.get_settings(user_id)
+                if not daily_enabled:
                     continue
-
-                team_id = teams[0]["team"]["id"]
-
-                fixtures = await self.match_service.get_team_matches(team_id)
-                if not fixtures:
-                    continue
-
-                match = fixtures[0]
-
-                match_time_str = match["fixture"]["date"]
-                match_time = datetime.fromisoformat(match_time_str.replace("Z", "+00:00"))
-                match_time = match_time.astimezone(tz)
-
-                if timedelta(minutes=25) <= (match_time - now) <= timedelta(minutes=35):
-
-                    home = match["teams"]["home"]["name"]
-                    away = match["teams"]["away"]["name"]
-
-                    text = (
-                        f"⏰ Match Reminder\n\n"
-                        f"{home} vs {away}\n"
-                        f"Starts at {match_time.strftime('%H:%M')}\n\n"
-                        f"Don't miss it!"
+                try:
+                    summary = self._build_daily_summary(matches, timezone)
+                    await self.bot.send_message(user_id, summary)
+                except Exception as exc:
+                    self.logger.exception(
+                        "Failed to send daily summary to user=%s timezone=%s: %s",
+                        user_id,
+                        timezone,
+                        exc,
                     )
+        except Exception as exc:
+            self.logger.exception("Daily summary failed: %s", exc)
 
-                    try:
-                        await self.bot.send_message(user_id, text)
-                    except Exception:
-                        continue
+    @staticmethod
+    def _build_daily_summary(matches: list[dict], timezone: str):
+        lines = [f"Today's matches ({timezone})", ""]
+        zone = ZoneInfo(timezone)
+        for match in matches[:5]:
+            lines.append(f"{match['home']} vs {match['away']}")
+            lines.append(match["league"])
+            lines.append(
+                datetime.fromisoformat(match["date"].replace("Z", "+00:00"))
+                .astimezone(zone)
+                .strftime("%Y-%m-%d %H:%M")
+            )
+            lines.append("")
+        return "\n".join(lines).strip()
