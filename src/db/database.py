@@ -1,56 +1,48 @@
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parents[2] / "favorites.db"
+# ---- Путь к базе ----
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DB_PATH = BASE_DIR / "bot.db"
 
 
 def get_connection():
-    return sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH)
+    return conn
 
 
 def init_db():
     conn = get_connection()
     cursor = conn.cursor()
 
+    # ---------- USERS ----------
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS favorites (
-            user_id INTEGER,
-            team_id INTEGER,
-            team_name TEXT,
-            PRIMARY KEY (user_id, team_id)
+        CREATE TABLE IF NOT EXISTS users (
+            user_id INTEGER PRIMARY KEY,
+            timezone TEXT DEFAULT 'UTC',
+            daily_summary INTEGER DEFAULT 1,
+            reminders INTEGER DEFAULT 1
         )
     """)
 
+    # ---------- FAVORITES ----------
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS favorites (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            team_name TEXT
+        )
+    """)
+
+    # ---------- REMINDER LOG ----------
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reminder_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            fixture_id INTEGER,
+            sent_at TEXT
+        )
+    """)
 
     conn.commit()
     conn.close()
-
-
-def add_favorite(user_id: int, team_id: int, team_name: str):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "INSERT OR IGNORE INTO favorites (user_id, team_id, team_name) VALUES (?, ?, ?)",
-        (user_id, team_id, team_name)
-    )
-
-    conn.commit()
-    conn.close()
-
-
-def get_favorites(user_id: int):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "SELECT team_id, team_name FROM favorites WHERE user_id = ?",
-        (user_id,)
-    )
-
-    rows = cursor.fetchall()
-    conn.close()
-
-    return rows  # [(team_id, team_name), ...]
-
-
