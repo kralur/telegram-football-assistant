@@ -48,6 +48,18 @@ def league_picker_keyboard(leagues: list[dict], prefix: str):
     return kb.as_markup()
 
 
+def today_filter_keyboard(leagues: list[dict], selected_league_id: int | None = None):
+    kb = InlineKeyboardBuilder()
+    all_title = "All leagues *" if selected_league_id is None else "All leagues"
+    kb.button(text=all_title, callback_data="today_filter:all")
+    for league in leagues:
+        title = f"{league['name']} {'*' if league['id'] == selected_league_id else ''}".strip()
+        kb.button(text=title, callback_data=f"today_filter:{league['id']}")
+    footer_navigation(kb)
+    kb.adjust(1)
+    return kb.as_markup()
+
+
 def pagination_row(kb: InlineKeyboardBuilder, page: int, total_pages: int):
     if total_pages <= 1:
         return
@@ -60,14 +72,50 @@ def pagination_row(kb: InlineKeyboardBuilder, page: int, total_pages: int):
 
 def match_list_keyboard(matches: list[dict], page: int, total_pages: int):
     kb = InlineKeyboardBuilder()
-    for match in matches:
+    for index, match in enumerate(matches, start=1):
         if match.get("id") is not None:
+            kb.button(
+                text=f"[{index}] {match['home']} vs {match['away']}",
+                callback_data="noop",
+            )
             kb.button(text="Details", callback_data=f"match:open:{match['id']}")
             kb.button(text="Notify", callback_data=f"notify:match:{match['id']}")
             kb.button(text="AI", callback_data=f"analysis:match:{match['id']}")
     pagination_row(kb, page, total_pages)
     footer_navigation(kb)
-    kb.adjust(3, 3, 3, 3, 3, 2, 2)
+    layout = []
+    for _ in matches:
+        layout.extend([1, 3])
+    if total_pages > 1:
+        if page > 0 and page < total_pages - 1:
+            layout.append(3)
+        else:
+            layout.append(2)
+    layout.append(2)
+    kb.adjust(*layout)
+    return kb.as_markup()
+
+
+def match_card_keyboard(match: dict | None, page: int, total_pages: int):
+    kb = InlineKeyboardBuilder()
+    if match and match.get("id") is not None:
+        kb.button(text="Details", callback_data=f"match:open:{match['id']}")
+        kb.button(text="Notify", callback_data=f"notify:match:{match['id']}")
+        kb.button(text="AI", callback_data=f"analysis:match:{match['id']}")
+    kb.button(text="Filter league", callback_data="nav:today_filter")
+    pagination_row(kb, page, total_pages)
+    footer_navigation(kb)
+    layout = []
+    if match and match.get("id") is not None:
+        layout.append(3)
+    layout.append(1)
+    if total_pages > 1:
+        if page > 0 and page < total_pages - 1:
+            layout.append(3)
+        else:
+            layout.append(2)
+    layout.append(2)
+    kb.adjust(*layout)
     return kb.as_markup()
 
 
@@ -87,13 +135,23 @@ def search_results_keyboard(results: list[dict], page: int, total_pages: int, of
 def favorites_keyboard(favorites: list[dict], page: int, total_pages: int, offset: int = 0):
     kb = InlineKeyboardBuilder()
     for index, team in enumerate(favorites):
+        next_match = team.get("next_match") or {}
+        if next_match.get("id") is not None:
+            kb.button(
+                text="Open next",
+                callback_data=f"favorite:open_next:{offset + index}",
+            )
+            kb.button(
+                text="Notify next",
+                callback_data=f"favorite:notify_next:{offset + index}",
+            )
         kb.button(
             text=f"Remove {team['team_name']}",
             callback_data=f"favorite:remove:{offset + index}",
         )
     pagination_row(kb, page, total_pages)
     footer_navigation(kb)
-    kb.adjust(1)
+    kb.adjust(2, 1, 2, 1, 2, 1, 2)
     return kb.as_markup()
 
 

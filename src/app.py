@@ -50,7 +50,7 @@ async def main():
 
     match_service = MatchService(football_client, cache)
     analysis_service = AnalysisService(openai_client, cache)
-    favorites_service = FavoritesService(favorites_repository)
+    favorites_service = FavoritesService(favorites_repository, match_service)
     search_service = SearchService(match_service, cache)
     notify_service = NotifyService(
         notification_repository,

@@ -1,11 +1,13 @@
 import uuid
 from datetime import UTC, datetime
+import logging
 
 from src.config.settings import (
     CACHE_TTL_MATCHES,
     CACHE_TTL_SCORERS,
     CACHE_TTL_STANDINGS,
 )
+from src.infrastructure.football_api_client import FootballApiError
 
 POPULAR_LEAGUES = {
     "premier league": {"id": 39, "name": "Premier League"},
@@ -52,6 +54,7 @@ class MatchService:
         self.api_client = api_client
         self.cache = cache
         self._match_cache = {}
+        self.logger = logging.getLogger("football_bot")
 
     async def get_today_matches(self):
         matches = await self._get_or_cache(
@@ -61,6 +64,12 @@ class MatchService:
             CACHE_TTL_MATCHES,
         )
         return self._sort_by_popularity(matches)
+
+    @staticmethod
+    def filter_matches_by_league(matches: list[dict], league_id: int | None = None):
+        if league_id is None:
+            return matches
+        return [match for match in matches if match.get("league_id") == league_id]
 
     async def get_live_matches(self):
         return await self._get_or_cache(
@@ -80,22 +89,22 @@ class MatchService:
 
     async def get_standings(self, league_query: str | None = None):
         league = self.resolve_league(league_query)
-        season = self.get_current_season()
-        return await self._get_or_cache(
-            f"standings:{league['id']}:{season}",
-            lambda: self.api_client.get_standings(league["id"], season),
-            self._normalize_standings,
-            CACHE_TTL_STANDINGS,
+        return await self._get_league_table_data(
+            cache_prefix="standings",
+            loader=lambda season: self.api_client.get_standings(league["id"], season),
+            normalizer=self._normalize_standings,
+            league_id=league["id"],
+            ttl=CACHE_TTL_STANDINGS,
         )
 
     async def get_top_scorers(self, league_query: str | None = None):
         league = self.resolve_league(league_query)
-        season = self.get_current_season()
-        return await self._get_or_cache(
-            f"scorers:{league['id']}:{season}",
-            lambda: self.api_client.get_top_scorers(league["id"], season),
-            self._normalize_scorers,
-            CACHE_TTL_SCORERS,
+        return await self._get_league_table_data(
+            cache_prefix="scorers",
+            loader=lambda season: self.api_client.get_top_scorers(league["id"], season),
+            normalizer=self._normalize_scorers,
+            league_id=league["id"],
+            ttl=CACHE_TTL_SCORERS,
         )
 
     async def get_match(self, match_id: int):
@@ -119,8 +128,27 @@ class MatchService:
         if cached is not None:
             return cached
 
-        raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
-        matches = self._normalize_fixtures(raw_matches)
+        try:
+            raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+            matches = self._normalize_fixtures(raw_matches)
+        except FootballApiError as exc:
+            if "Next parameter" not in exc.details:
+                raise
+            matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+        self.cache.set(cache_key, matches, ttl=CACHE_TTL_MATCHES)
+        return matches
+
+    async def get_last_team_matches(self, team_id: int, limit: int = 5):
+        cache_key = f"matches:team:last:{team_id}:{limit}"
+        cached = self.cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        try:
+            raw_matches = await self.api_client.get_last_fixtures_by_team_id(team_id, limit=limit)
+            matches = self._normalize_fixtures(raw_matches)
+        except FootballApiError:
+            matches = await self._fallback_team_matches(team_id, limit=limit, direction="last")
         self.cache.set(cache_key, matches, ttl=CACHE_TTL_MATCHES)
         return matches
 
@@ -166,6 +194,59 @@ class MatchService:
         self.cache.set(cache_key, normalized, ttl=ttl)
         return normalized
 
+    async def _get_league_table_data(self, cache_prefix: str, loader, normalizer, league_id: int, ttl: int):
+        seasons_to_try = self._supported_seasons_for_plan()
+        last_exc = None
+
+        for season in seasons_to_try:
+            cache_key = f"{cache_prefix}:{league_id}:{season}"
+            cached = self.cache.get(cache_key)
+            if cached is not None:
+                return cached
+
+            try:
+                raw_data = await loader(season)
+            except FootballApiError as exc:
+                last_exc = exc
+                self.logger.info(
+                    "Falling back to older season for %s league=%s after error: %s",
+                    cache_prefix,
+                    league_id,
+                    exc.details,
+                )
+                continue
+
+            normalized = normalizer(raw_data)
+            self.cache.set(cache_key, normalized, ttl=ttl)
+            return normalized
+
+        if last_exc:
+            raise last_exc
+        return []
+
+    async def _fallback_team_matches(self, team_id: int, limit: int, direction: str):
+        season = self.get_current_season()
+        raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+        matches = self._normalize_fixtures(raw_matches)
+        now = datetime.now(UTC)
+
+        if direction == "next":
+            filtered = [
+                match
+                for match in matches
+                if match.get("date") and self._parse_match_datetime(match["date"]) >= now
+            ]
+            filtered.sort(key=lambda match: match.get("date") or "")
+        else:
+            filtered = [
+                match
+                for match in matches
+                if match.get("date") and self._parse_match_datetime(match["date"]) <= now
+            ]
+            filtered.sort(key=lambda match: match.get("date") or "", reverse=True)
+
+        return filtered[:limit]
+
     def _normalize_fixtures(self, fixtures: list[dict]):
         return [self._normalize_fixture(fixture) for fixture in fixtures if fixture]
 
@@ -197,6 +278,10 @@ class MatchService:
                 league.get("id"),
             ),
         }
+
+    @staticmethod
+    def _parse_match_datetime(value: str):
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(UTC)
 
     @staticmethod
     def _normalize_standings(rows: list[dict]):
@@ -251,3 +336,9 @@ class MatchService:
             ),
             reverse=True,
         )
+
+    def _supported_seasons_for_plan(self):
+        current = self.get_current_season()
+        latest_allowed = min(current, 2024)
+        seasons = list(range(latest_allowed, 2021, -1))
+        return seasons or [latest_allowed]

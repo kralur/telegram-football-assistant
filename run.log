@@ -1,1223 +1,347 @@
-2026-03-28 19:28:25,805 | INFO | football_bot | Starting Football Assistant...
-2026-03-28 19:28:25,810 | INFO | football_bot | Database initialized
-2026-03-28 19:28:26,428 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
-2026-03-28 19:28:26,431 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
-2026-03-28 19:28:26,432 | INFO | apscheduler.scheduler | Added job "SchedulerService.sync_notifications" to job store "default"
-2026-03-28 19:28:26,433 | INFO | apscheduler.scheduler | Added job "SchedulerService.daily_summary" to job store "default"
-2026-03-28 19:28:26,433 | INFO | apscheduler.scheduler | Scheduler started
-2026-03-28 19:28:26,433 | INFO | football_bot | Scheduler started
-2026-03-28 19:28:26,434 | INFO | football_bot | Bot is running...
-2026-03-28 19:28:26,434 | INFO | aiogram.dispatcher | Start polling
-2026-03-28 19:28:26,956 | INFO | aiogram.dispatcher | Run polling for bot @football_assistant_kralur_bot id=8278692462 - 'Football Assistant'
-2026-03-28 19:28:56,437 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:29:26 +05)" (scheduled at 2026-03-28 19:28:56.428837+05:00)
-2026-03-28 19:28:56,778 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:28:56,782 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:28:56,783 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
+2026-03-31 11:25:18,653 | INFO | football_bot | Starting Football Assistant...
+2026-03-31 11:25:18,657 | INFO | football_bot | Database initialized
+2026-03-31 11:25:19,431 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-31 11:25:19,434 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-31 11:25:19,436 | INFO | apscheduler.scheduler | Added job "SchedulerService.sync_notifications" to job store "default"
+2026-03-31 11:25:19,436 | INFO | apscheduler.scheduler | Added job "SchedulerService.daily_summary" to job store "default"
+2026-03-31 11:25:19,437 | INFO | apscheduler.scheduler | Scheduler started
+2026-03-31 11:25:19,438 | INFO | football_bot | Scheduler started
+2026-03-31 11:25:19,438 | INFO | football_bot | Bot is running...
+2026-03-31 11:25:19,438 | INFO | aiogram.dispatcher | Start polling
+2026-03-31 11:25:19,758 | INFO | aiogram.dispatcher | Run polling for bot @football_assistant_kralur_bot id=8278692462 - 'Football Assistant'
+2026-03-31 11:25:49,434 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:26:19 +05)" (scheduled at 2026-03-31 11:25:49.430989+05:00)
+2026-03-31 11:25:49,755 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:25:49,760 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:25:49,879 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:25:49,883 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:25:49,883 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
 Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
     ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:28:56,786 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:29:26 +05)" executed successfully
-2026-03-28 19:29:25,954 | INFO | aiogram.event | Update id=867725974 is handled. Duration 510 ms by bot id=8278692462
-2026-03-28 19:29:26,438 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:29:56 +05)" (scheduled at 2026-03-28 19:29:26.428837+05:00)
-2026-03-28 19:29:26,747 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:29:26,751 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:29:26,752 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:29:26,755 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:29:56 +05)" executed successfully
-2026-03-28 19:29:28,096 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?date=2026-03-28&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-28 19:29:28,100 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'date': '2026-03-28', 'timezone': 'UTC'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:29:28,101 | WARNING | football_bot | Failed to build screen for user=5044343262 screen=today: requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:29:28,313 | INFO | aiogram.event | Update id=867725975 is handled. Duration 564 ms by bot id=8278692462
-2026-03-28 19:29:32,983 | INFO | aiogram.event | Update id=867725976 is handled. Duration 419 ms by bot id=8278692462
-2026-03-28 19:29:56,436 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:30:26 +05)" (scheduled at 2026-03-28 19:29:56.428837+05:00)
-2026-03-28 19:29:56,761 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:29:56,764 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:29:56,765 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:29:56,767 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:30:26 +05)" executed successfully
-2026-03-28 19:30:26,433 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:30:56 +05)" (scheduled at 2026-03-28 19:30:26.428837+05:00)
-2026-03-28 19:30:26,846 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:30:26,850 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:30:26,850 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:30:26,852 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:30:56 +05)" executed successfully
-2026-03-28 19:30:56,431 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:31:26 +05)" (scheduled at 2026-03-28 19:30:56.428837+05:00)
-2026-03-28 19:30:56,803 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:30:56,806 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:30:56,807 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:30:56,808 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:31:26 +05)" executed successfully
-2026-03-28 19:31:26,440 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:31:56 +05)" (scheduled at 2026-03-28 19:31:26.428837+05:00)
-2026-03-28 19:31:26,757 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:31:26,760 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:31:26,761 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:31:26,763 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:31:56 +05)" executed successfully
-2026-03-28 19:31:56,435 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:32:26 +05)" (scheduled at 2026-03-28 19:31:56.428837+05:00)
-2026-03-28 19:32:02,096 | ERROR | football_bot | Football API request failed endpoint=/teams params={'search': 'Atletico Hidalgo'} error=
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
-    yield
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
-    resp = await self._pool.handle_async_request(req)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
-    raise exc from None
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
-    response = await connection.handle_async_request(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        pool_request.request
-        ^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
-    raise exc
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 78, in handle_async_request
-    stream = await self._connect(request)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 156, in _connect
-    stream = await stream.start_tls(**kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_backends\anyio.py", line 67, in start_tls
-    with map_exceptions(exc_map):
-         ~~~~~~~~~~~~~~^^^^^^^^^
-  File "C:\Python314\Lib\contextlib.py", line 162, in __exit__
-    self.gen.throw(value)
-    ~~~~~~~~~~~~~~^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
-    raise to_exc(exc) from exc
-httpcore.ConnectError
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
 
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 32, in _get
-    response = await self.client.get(endpoint, params=params)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1768, in get
-    return await self.request(
-           ^^^^^^^^^^^^^^^^^^^
-    ...<9 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1540, in request
-    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1629, in send
-    response = await self._send_handling_auth(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<4 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
-    response = await self._send_handling_redirects(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<3 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
-    response = await self._send_single_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
-    response = await transport.handle_async_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
-    with map_httpcore_exceptions():
-         ~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Python314\Lib\contextlib.py", line 162, in __exit__
-    self.gen.throw(value)
-    ~~~~~~~~~~~~~~^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
-    raise mapped_exc(message) from exc
-httpx.ConnectError
-2026-03-28 19:32:02,152 | ERROR | football_bot | Scheduler sync failed: Football data provider is temporarily unavailable. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
-    yield
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
-    resp = await self._pool.handle_async_request(req)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
-    raise exc from None
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
-    response = await connection.handle_async_request(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        pool_request.request
-        ^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
-    raise exc
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 78, in handle_async_request
-    stream = await self._connect(request)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 156, in _connect
-    stream = await stream.start_tls(**kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_backends\anyio.py", line 67, in start_tls
-    with map_exceptions(exc_map):
-         ~~~~~~~~~~~~~~^^^^^^^^^
-  File "C:\Python314\Lib\contextlib.py", line 162, in __exit__
-    self.gen.throw(value)
-    ~~~~~~~~~~~~~~^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
-    raise to_exc(exc) from exc
-httpcore.ConnectError
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 32, in _get
-    response = await self.client.get(endpoint, params=params)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1768, in get
-    return await self.request(
-           ^^^^^^^^^^^^^^^^^^^
-    ...<9 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1540, in request
-    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1629, in send
-    response = await self._send_handling_auth(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<4 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
-    response = await self._send_handling_redirects(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<3 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
-    response = await self._send_single_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
-    response = await transport.handle_async_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
-    with map_httpcore_exceptions():
-         ~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Python314\Lib\contextlib.py", line 162, in __exit__
-    self.gen.throw(value)
-    ~~~~~~~~~~~~~~^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
-    raise mapped_exc(message) from exc
-httpx.ConnectError
-
-The above exception was the direct cause of the following exception:
+During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
     await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 54, in _get
-    raise FootballApiError(
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
     ...<2 lines>...
-    ) from exc
-src.infrastructure.football_api_client.FootballApiError: Football data provider is temporarily unavailable. Please try again later.
-2026-03-28 19:32:02,156 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:32:26 +05)" executed successfully
-2026-03-28 19:32:26,439 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:32:56 +05)" (scheduled at 2026-03-28 19:32:26.428837+05:00)
-2026-03-28 19:32:28,349 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:32:28,353 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:32:28,353 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:32:28,355 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:32:56 +05)" executed successfully
-2026-03-28 19:32:56,438 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:33:26 +05)" (scheduled at 2026-03-28 19:32:56.428837+05:00)
-2026-03-28 19:32:56,754 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:32:56,757 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:32:56,758 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:32:56,760 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:33:26 +05)" executed successfully
-2026-03-28 19:33:26,440 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:33:56 +05)" (scheduled at 2026-03-28 19:33:26.428837+05:00)
-2026-03-28 19:33:26,777 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:33:26,781 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:33:26,783 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:33:26,785 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:33:56 +05)" executed successfully
-2026-03-28 19:33:56,438 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:34:26 +05)" (scheduled at 2026-03-28 19:33:56.428837+05:00)
-2026-03-28 19:33:56,779 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:33:56,783 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:33:56,784 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:33:56,786 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:34:26 +05)" executed successfully
-2026-03-28 19:34:26,436 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:34:56 +05)" (scheduled at 2026-03-28 19:34:26.428837+05:00)
-2026-03-28 19:34:26,764 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:34:26,766 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:34:26,766 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:34:26,768 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:34:56 +05)" executed successfully
-2026-03-28 19:34:56,446 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:35:26 +05)" (scheduled at 2026-03-28 19:34:56.428837+05:00)
-2026-03-28 19:34:56,796 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:34:56,800 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:34:56,800 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:34:56,802 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:35:26 +05)" executed successfully
-2026-03-28 19:35:26,436 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:35:56 +05)" (scheduled at 2026-03-28 19:35:26.428837+05:00)
-2026-03-28 19:35:26,772 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:35:26,775 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:35:26,776 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:35:26,777 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:35:56 +05)" executed successfully
-2026-03-28 19:35:56,436 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:36:26 +05)" (scheduled at 2026-03-28 19:35:56.428837+05:00)
-2026-03-28 19:35:57,316 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:35:57,318 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:35:57,319 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:35:57,321 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:36:26 +05)" executed successfully
-2026-03-28 19:36:26,430 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:36:56 +05)" (scheduled at 2026-03-28 19:36:26.428837+05:00)
-2026-03-28 19:36:26,758 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:36:26,761 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:36:26,762 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:36:26,764 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:36:56 +05)" executed successfully
-2026-03-28 19:36:56,436 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:37:26 +05)" (scheduled at 2026-03-28 19:36:56.428837+05:00)
-2026-03-28 19:36:56,748 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:36:56,752 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:36:56,752 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:36:56,754 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:37:26 +05)" executed successfully
-2026-03-28 19:37:26,436 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:37:56 +05)" (scheduled at 2026-03-28 19:37:26.428837+05:00)
-2026-03-28 19:37:26,750 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:37:26,754 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:37:26,754 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:37:26,756 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:37:56 +05)" executed successfully
-2026-03-28 19:37:56,440 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:38:26 +05)" (scheduled at 2026-03-28 19:37:56.428837+05:00)
-2026-03-28 19:37:56,747 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:37:56,750 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:37:56,751 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:37:56,753 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:38:26 +05)" executed successfully
-2026-03-28 19:38:26,444 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:38:56 +05)" (scheduled at 2026-03-28 19:38:26.428837+05:00)
-2026-03-28 19:38:26,863 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:38:26,866 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:38:26,867 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:38:26,869 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:38:56 +05)" executed successfully
-2026-03-28 19:38:56,439 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:39:26 +05)" (scheduled at 2026-03-28 19:38:56.428837+05:00)
-2026-03-28 19:38:56,752 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:38:56,756 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:38:56,757 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:38:56,759 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:39:26 +05)" executed successfully
-2026-03-28 19:39:26,430 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:39:56 +05)" (scheduled at 2026-03-28 19:39:26.428837+05:00)
-2026-03-28 19:39:27,646 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:39:27,650 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:39:27,650 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:39:27,653 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:39:56 +05)" executed successfully
-2026-03-28 19:39:56,444 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:40:26 +05)" (scheduled at 2026-03-28 19:39:56.428837+05:00)
-2026-03-28 19:40:08,090 | ERROR | football_bot | Football API request failed endpoint=/teams params={'search': 'Atletico Hidalgo'} error=
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
-    yield
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
-    resp = await self._pool.handle_async_request(req)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
-    raise exc from None
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
-    response = await connection.handle_async_request(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        pool_request.request
-        ^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
-    raise exc
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 78, in handle_async_request
-    stream = await self._connect(request)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 156, in _connect
-    stream = await stream.start_tls(**kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_backends\anyio.py", line 67, in start_tls
-    with map_exceptions(exc_map):
-         ~~~~~~~~~~~~~~^^^^^^^^^
-  File "C:\Python314\Lib\contextlib.py", line 162, in __exit__
-    self.gen.throw(value)
-    ~~~~~~~~~~~~~~^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
-    raise to_exc(exc) from exc
-httpcore.ConnectTimeout
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+2026-03-31 11:25:49,888 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:26:19 +05)" executed successfully
+2026-03-31 11:26:19,442 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:26:49 +05)" (scheduled at 2026-03-31 11:26:19.430989+05:00)
+2026-03-31 11:26:19,777 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:26:19,779 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:26:19,904 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:26:19,907 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:26:19,908 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
 
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 32, in _get
-    response = await self.client.get(endpoint, params=params)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1768, in get
-    return await self.request(
-           ^^^^^^^^^^^^^^^^^^^
-    ...<9 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1540, in request
-    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1629, in send
-    response = await self._send_handling_auth(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<4 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
-    response = await self._send_handling_redirects(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<3 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
-    response = await self._send_single_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
-    response = await transport.handle_async_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
-    with map_httpcore_exceptions():
-         ~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Python314\Lib\contextlib.py", line 162, in __exit__
-    self.gen.throw(value)
-    ~~~~~~~~~~~~~~^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
-    raise mapped_exc(message) from exc
-httpx.ConnectTimeout
-2026-03-28 19:40:08,097 | ERROR | football_bot | Scheduler sync failed: Football data provider is temporarily unavailable. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
-    yield
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
-    resp = await self._pool.handle_async_request(req)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
-    raise exc from None
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
-    response = await connection.handle_async_request(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        pool_request.request
-        ^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
-    raise exc
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 78, in handle_async_request
-    stream = await self._connect(request)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_async\connection.py", line 156, in _connect
-    stream = await stream.start_tls(**kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_backends\anyio.py", line 67, in start_tls
-    with map_exceptions(exc_map):
-         ~~~~~~~~~~~~~~^^^^^^^^^
-  File "C:\Python314\Lib\contextlib.py", line 162, in __exit__
-    self.gen.throw(value)
-    ~~~~~~~~~~~~~~^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
-    raise to_exc(exc) from exc
-httpcore.ConnectTimeout
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 32, in _get
-    response = await self.client.get(endpoint, params=params)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1768, in get
-    return await self.request(
-           ^^^^^^^^^^^^^^^^^^^
-    ...<9 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1540, in request
-    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1629, in send
-    response = await self._send_handling_auth(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<4 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
-    response = await self._send_handling_redirects(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<3 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
-    response = await self._send_single_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
-    response = await transport.handle_async_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
-    with map_httpcore_exceptions():
-         ~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Python314\Lib\contextlib.py", line 162, in __exit__
-    self.gen.throw(value)
-    ~~~~~~~~~~~~~~^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
-    raise mapped_exc(message) from exc
-httpx.ConnectTimeout
-
-The above exception was the direct cause of the following exception:
+During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
     await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 54, in _get
-    raise FootballApiError(
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
     ...<2 lines>...
-    ) from exc
-src.infrastructure.football_api_client.FootballApiError: Football data provider is temporarily unavailable. Please try again later.
-2026-03-28 19:40:08,102 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:40:26 +05)" executed successfully
-2026-03-28 19:40:26,442 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:40:56 +05)" (scheduled at 2026-03-28 19:40:26.428837+05:00)
-2026-03-28 19:40:27,024 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:40:27,027 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:40:27,028 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
     raise FootballApiError(
     ...<2 lines>...
     )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:40:27,029 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:40:56 +05)" executed successfully
-2026-03-28 19:40:56,434 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:41:26 +05)" (scheduled at 2026-03-28 19:40:56.428837+05:00)
-2026-03-28 19:40:57,317 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:40:57,320 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:40:57,321 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+2026-03-31 11:26:19,911 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:26:49 +05)" executed successfully
+2026-03-31 11:26:49,443 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:27:19 +05)" (scheduled at 2026-03-31 11:26:49.430989+05:00)
+2026-03-31 11:26:51,493 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:26:51,498 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:26:51,626 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:26:51,631 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:26:51,632 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
 Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
     raise FootballApiError(
     ...<2 lines>...
     )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:40:57,322 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:41:26 +05)" executed successfully
-2026-03-28 19:41:26,444 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:41:56 +05)" (scheduled at 2026-03-28 19:41:26.428837+05:00)
-2026-03-28 19:41:26,751 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:41:26,754 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:41:26,755 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+
+During handling of the above exception, another exception occurred:
+
 Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
     await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
     raise FootballApiError(
     ...<2 lines>...
     )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:41:26,756 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:41:56 +05)" executed successfully
-2026-03-28 19:41:56,430 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:42:26 +05)" (scheduled at 2026-03-28 19:41:56.428837+05:00)
-2026-03-28 19:41:56,749 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:41:56,753 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:41:56,753 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+2026-03-31 11:26:51,635 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:27:19 +05)" executed successfully
+2026-03-31 11:27:19,439 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:27:49 +05)" (scheduled at 2026-03-31 11:27:19.430989+05:00)
+2026-03-31 11:27:19,753 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:27:19,757 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:27:19,871 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:27:19,875 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:27:19,876 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+
+During handling of the above exception, another exception occurred:
+
 Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
     await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
     raise FootballApiError(
     ...<2 lines>...
     )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:41:56,755 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:42:26 +05)" executed successfully
-2026-03-28 19:42:26,443 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:42:56 +05)" (scheduled at 2026-03-28 19:42:26.428837+05:00)
-2026-03-28 19:42:26,762 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:42:26,767 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:42:26,767 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+2026-03-31 11:27:19,878 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:27:49 +05)" executed successfully
+2026-03-31 11:27:49,443 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:28:19 +05)" (scheduled at 2026-03-31 11:27:49.430989+05:00)
+2026-03-31 11:27:49,765 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:27:49,770 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:27:49,892 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:27:49,897 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:27:49,897 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+
+During handling of the above exception, another exception occurred:
+
 Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
     await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
     raise FootballApiError(
     ...<2 lines>...
     )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:42:26,769 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:42:56 +05)" executed successfully
-2026-03-28 19:42:56,434 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:43:26 +05)" (scheduled at 2026-03-28 19:42:56.428837+05:00)
-2026-03-28 19:42:56,744 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:42:56,748 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:42:56,748 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+2026-03-31 11:27:49,900 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:28:19 +05)" executed successfully
+2026-03-31 11:28:19,443 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:28:49 +05)" (scheduled at 2026-03-31 11:28:19.430989+05:00)
+2026-03-31 11:28:19,765 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:28:19,770 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:28:19,890 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:28:19,893 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:28:19,893 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+
+During handling of the above exception, another exception occurred:
+
 Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
     await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
     raise FootballApiError(
     ...<2 lines>...
     )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:42:56,750 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:43:26 +05)" executed successfully
-2026-03-28 19:43:26,441 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:43:56 +05)" (scheduled at 2026-03-28 19:43:26.428837+05:00)
-2026-03-28 19:43:26,751 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:43:26,755 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:43:26,755 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+2026-03-31 11:28:19,896 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:28:49 +05)" executed successfully
+2026-03-31 11:28:49,441 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:29:19 +05)" (scheduled at 2026-03-31 11:28:49.430989+05:00)
+2026-03-31 11:28:49,779 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:28:49,782 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:28:49,908 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:28:49,911 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:28:49,911 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+
+During handling of the above exception, another exception occurred:
+
 Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
     await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
     raise FootballApiError(
     ...<2 lines>...
     )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:43:26,757 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:43:56 +05)" executed successfully
-2026-03-28 19:43:56,444 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:44:26 +05)" (scheduled at 2026-03-28 19:43:56.428837+05:00)
-2026-03-28 19:43:56,759 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:43:56,764 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:43:56,764 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:43:56,767 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:44:26 +05)" executed successfully
-2026-03-28 19:44:26,438 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:44:56 +05)" (scheduled at 2026-03-28 19:44:26.428837+05:00)
-2026-03-28 19:44:26,750 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:44:26,754 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:44:26,754 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:44:26,756 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:44:56 +05)" executed successfully
-2026-03-28 19:44:56,435 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:45:26 +05)" (scheduled at 2026-03-28 19:44:56.428837+05:00)
-2026-03-28 19:44:56,786 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:44:56,790 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:44:56,791 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:44:56,793 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:45:26 +05)" executed successfully
-2026-03-28 19:45:26,431 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:45:56 +05)" (scheduled at 2026-03-28 19:45:26.428837+05:00)
-2026-03-28 19:45:26,751 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:45:26,755 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:45:26,756 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:45:26,758 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:45:56 +05)" executed successfully
-2026-03-28 19:45:56,438 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:46:26 +05)" (scheduled at 2026-03-28 19:45:56.428837+05:00)
-2026-03-28 19:45:56,942 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:45:56,945 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:45:56,946 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:45:56,948 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:46:26 +05)" executed successfully
-2026-03-28 19:46:26,431 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:46:56 +05)" (scheduled at 2026-03-28 19:46:26.428837+05:00)
-2026-03-28 19:46:26,761 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:46:26,766 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:46:26,767 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:46:26,769 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:46:56 +05)" executed successfully
-2026-03-28 19:46:56,444 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:47:26 +05)" (scheduled at 2026-03-28 19:46:56.428837+05:00)
-2026-03-28 19:46:56,787 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:46:56,790 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:46:56,791 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:46:56,793 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:47:26 +05)" executed successfully
-2026-03-28 19:47:26,431 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:47:56 +05)" (scheduled at 2026-03-28 19:47:26.428837+05:00)
-2026-03-28 19:47:26,756 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:47:26,760 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:47:26,760 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:47:26,763 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:47:56 +05)" executed successfully
-2026-03-28 19:47:56,439 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:48:26 +05)" (scheduled at 2026-03-28 19:47:56.428837+05:00)
-2026-03-28 19:47:56,760 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:47:56,765 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:47:56,765 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:47:56,767 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:48:26 +05)" executed successfully
-2026-03-28 19:48:26,443 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:48:56 +05)" (scheduled at 2026-03-28 19:48:26.428837+05:00)
-2026-03-28 19:48:26,766 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:48:26,769 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:48:26,770 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:48:26,772 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:48:56 +05)" executed successfully
-2026-03-28 19:48:56,433 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:49:26 +05)" (scheduled at 2026-03-28 19:48:56.428837+05:00)
-2026-03-28 19:48:56,746 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Atletico+Hidalgo "HTTP/1.1 200 OK"
-2026-03-28 19:48:56,750 | WARNING | football_bot | Football API returned payload errors endpoint=/teams params={'search': 'Atletico Hidalgo'} errors=requests: You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.
-2026-03-28 19:48:56,750 | ERROR | football_bot | Scheduler sync failed: API request limit reached for today. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 47, in sync_favorites_for_user
-    raw_results = await self.match_service.search_team(favorite["team_name"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 114, in search_team
-    return await self.api_client.search_team(query)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 108, in search_team
-    return await self._get("/teams", {"search": query})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 69, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: API request limit reached for today. Please try again later.
-2026-03-28 19:48:56,753 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-28 19:49:26 +05)" executed successfully
+src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+2026-03-31 11:28:49,912 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:29:19 +05)" executed successfully

@@ -3,7 +3,7 @@ import logging
 from aiogram import Router
 from aiogram.filters import Command, CommandStart
 from aiogram.exceptions import TelegramBadRequest
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 
 from src.bot.keyboards import (
     TIMEZONE_OPTIONS,
@@ -11,10 +11,12 @@ from src.bot.keyboards import (
     favorites_keyboard,
     league_picker_keyboard,
     main_menu_keyboard,
+    match_card_keyboard,
     match_detail_keyboard,
     match_list_keyboard,
     search_results_keyboard,
     table_screen_keyboard,
+    today_filter_keyboard,
     timezone_keyboard,
 )
 from src.bot.pagination import paginate
@@ -24,6 +26,7 @@ from src.bot.views import (
     help_text,
     analysis_text,
     main_menu_text,
+    match_card_text,
     match_details_text,
     matches_text,
     notification_added_text,
@@ -43,9 +46,10 @@ sessions = SessionStore()
 logger = logging.getLogger("football_bot")
 
 MATCHES_PAGE_SIZE = 5
+MATCH_CARD_PAGE_SIZE = 1
 TABLE_PAGE_SIZE = 10
 SEARCH_PAGE_SIZE = 5
-FAVORITES_PAGE_SIZE = 8
+FAVORITES_PAGE_SIZE = 4
 
 
 def setup_handlers(
@@ -89,6 +93,15 @@ async def render_message(message: Message, user_id: int):
         if message.from_user.username
         else message.from_user.full_name
     )
+    cleanup_message = await message.answer(
+        "Switching to inline mode...",
+        reply_markup=ReplyKeyboardRemove(),
+    )
+    try:
+        await cleanup_message.delete()
+    except Exception:
+        logger.debug("Could not delete inline cleanup message for user=%s", user_id)
+
     sent = await message.answer(
         main_menu_text(user_timezone(user_id), user_label=user_label),
         reply_markup=main_menu_keyboard(),
@@ -168,21 +181,43 @@ async def build_screen(user_id: int, screen: str, payload: dict):
         matches = payload.get("matches")
         if matches is None:
             matches = await services["match_service"].get_today_matches()
-        page_items, page, total_pages = paginate(matches, payload.get("page", 0), MATCHES_PAGE_SIZE)
+        selected_league_id = payload.get("league_id")
+        selected_league_name = payload.get("league_name", "All leagues")
+        filtered_matches = services["match_service"].filter_matches_by_league(matches, selected_league_id)
+        page_items, page, total_pages = paginate(filtered_matches, payload.get("page", 0), MATCH_CARD_PAGE_SIZE)
+        current_match = page_items[0] if page_items else None
+        title = "Today's matches" if selected_league_id is None else f"Today's matches - {selected_league_name}"
         return (
-            matches_text("Today's matches", page_items, timezone, page, total_pages),
-            match_list_keyboard(page_items, page, total_pages),
-            {"matches": matches, "page": page},
+            match_card_text(title, current_match, timezone, page, total_pages),
+            match_card_keyboard(current_match, page, total_pages),
+            {
+                "matches": matches,
+                "page": page,
+                "league_id": selected_league_id,
+                "league_name": selected_league_name,
+            },
+        )
+
+    if screen == "today_filter":
+        selected_league_id = payload.get("league_id")
+        return (
+            "Filter today's matches by league.",
+            today_filter_keyboard(
+                services["match_service"].supported_leagues(),
+                selected_league_id=selected_league_id,
+            ),
+            payload,
         )
 
     if screen == "live":
         matches = payload.get("matches")
         if matches is None:
             matches = await services["match_service"].get_live_matches()
-        page_items, page, total_pages = paginate(matches, payload.get("page", 0), MATCHES_PAGE_SIZE)
+        page_items, page, total_pages = paginate(matches, payload.get("page", 0), MATCH_CARD_PAGE_SIZE)
+        current_match = page_items[0] if page_items else None
         return (
-            matches_text("Live matches", page_items, timezone, page, total_pages),
-            match_list_keyboard(page_items, page, total_pages),
+            match_card_text("Live matches", current_match, timezone, page, total_pages),
+            match_card_keyboard(current_match, page, total_pages),
             {"matches": matches, "page": page},
         )
 
@@ -235,7 +270,7 @@ async def build_screen(user_id: int, screen: str, payload: dict):
     if screen == "favorites":
         favorites = payload.get("favorites")
         if favorites is None:
-            favorites = services["favorites_service"].get_user_favorites(user_id)
+            favorites = await services["favorites_service"].get_user_favorites_overview(user_id)
         pending = services["notify_service"].list_pending_notifications(user_id)
         page_items, page, total_pages = paginate(favorites, payload.get("page", 0), FAVORITES_PAGE_SIZE)
         offset = page * FAVORITES_PAGE_SIZE
@@ -303,6 +338,17 @@ async def callback_router(call: CallbackQuery):
         await render_callback(call, "today")
     elif action == "nav:live":
         await render_callback(call, "live")
+    elif action == "nav:today_filter":
+        await render_callback(
+            call,
+            "today_filter",
+            {
+                "matches": payload.get("matches"),
+                "league_id": payload.get("league_id"),
+                "league_name": payload.get("league_name", "All leagues"),
+                "page": payload.get("page", 0),
+            },
+        )
     elif action == "nav:standings_leagues":
         await render_callback(call, "standings_leagues")
     elif action == "nav:scorers_leagues":
@@ -352,6 +398,24 @@ async def callback_router(call: CallbackQuery):
     elif action.startswith("league:scorers:"):
         league = league_by_id(int(action.split(":")[-1]))
         await render_callback(call, "scorers", {"league": league, "page": 0})
+    elif action == "today_filter:all":
+        await render_callback(
+            call,
+            "today",
+            {"matches": payload.get("matches"), "page": 0, "league_id": None, "league_name": "All leagues"},
+        )
+    elif action.startswith("today_filter:"):
+        league = league_by_id(int(action.split(":")[-1]))
+        await render_callback(
+            call,
+            "today",
+            {
+                "matches": payload.get("matches"),
+                "page": 0,
+                "league_id": league["id"],
+                "league_name": league["name"],
+            },
+        )
     elif action.startswith("timezone:set:"):
         timezone_index = int(action.split(":")[-1])
         timezone_value = TIMEZONE_OPTIONS[timezone_index][0]
@@ -405,6 +469,27 @@ async def callback_router(call: CallbackQuery):
                 team_id=favorite.get("team_id"),
             )
         await render_callback(call, "favorites")
+    elif action.startswith("favorite:open_next:"):
+        index = int(action.split(":")[-1])
+        favorites = payload.get("favorites", [])
+        if 0 <= index < len(favorites):
+            favorite = favorites[index]
+            next_match = favorite.get("next_match")
+            if next_match and next_match.get("id") is not None:
+                match = await services["match_service"].get_match(next_match["id"])
+                await render_callback(call, "match_details", {"match": match or next_match})
+    elif action.startswith("favorite:notify_next:"):
+        index = int(action.split(":")[-1])
+        favorites = payload.get("favorites", [])
+        if 0 <= index < len(favorites):
+            favorite = favorites[index]
+            next_match = favorite.get("next_match")
+            if next_match and next_match.get("id") is not None:
+                match = await services["notify_service"].subscribe(user_id, next_match["id"])
+                if match:
+                    await render_callback(call, "notification_added", {"match": match})
+                else:
+                    await render_callback(call, "notification_unavailable", {})
 
 
 @router.message()

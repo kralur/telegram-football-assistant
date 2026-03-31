@@ -82,6 +82,12 @@ class FootballApiClient:
     async def get_fixtures_by_date(self, date: str):
         return await self._get("/fixtures", {"date": date, "timezone": "UTC"})
 
+    async def get_fixtures_by_team_and_season(self, team_id: int, season: int):
+        return await self._get(
+            "/fixtures",
+            {"team": team_id, "season": season, "timezone": "UTC"},
+        )
+
     async def get_live_fixtures(self):
         return await self._get("/fixtures", {"live": "all", "timezone": "UTC"})
 
@@ -111,6 +117,12 @@ class FootballApiClient:
         return await self._get(
             "/fixtures",
             {"team": team_id, "next": limit, "timezone": "UTC"},
+        )
+
+    async def get_last_fixtures_by_team_id(self, team_id: int, limit: int = 5):
+        return await self._get(
+            "/fixtures",
+            {"team": team_id, "last": limit, "timezone": "UTC"},
         )
 
     async def get_fixture(self, match_id: int):

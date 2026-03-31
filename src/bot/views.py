@@ -46,11 +46,28 @@ def matches_text(title: str, matches: list[dict], timezone: str, page: int, tota
         if match.get("country") and match["country"] != "Unknown country":
             league_line = f"{match['country']} - {match['league']}"
 
-        lines.append(f"{index}. {match['home']} vs {match['away']}{score}")
-        lines.append(league_line)
-        lines.append(f"{format_datetime(match.get('date'), timezone)} | {status}")
+        lines.append(f"[{index}] {match['home']} vs {match['away']}{score}")
+        lines.append(f"League: {league_line}")
+        lines.append(f"Time: {format_datetime(match.get('date'), timezone)} | {status}")
         lines.append("")
     return "\n".join(lines).strip()
+
+
+def match_card_text(title: str, match: dict | None, timezone: str, page: int, total_pages: int):
+    if not match:
+        return f"{title}\n\nNo data available right now."
+
+    score = f" {match['score']}" if match.get("score") and match["score"] != "-" else ""
+    league_line = match["league"]
+    if match.get("country") and match["country"] != "Unknown country":
+        league_line = f"{match['country']} - {match['league']}"
+
+    return (
+        f"{title} ({page + 1}/{total_pages})\n\n"
+        f"{match['home']} vs {match['away']}{score}\n"
+        f"League: {league_line}\n"
+        f"Time: {format_datetime(match.get('date'), timezone)} | {match.get('status_long', 'Unknown')}"
+    )
 
 
 def standings_text(league_name: str, rows: list[dict], page: int, total_pages: int):
@@ -95,8 +112,25 @@ def favorites_text(favorites: list[dict], pending_count: int, timezone: str, pag
         lines.append("No favorite teams yet.")
         lines.append("Use Search to add a team.")
     else:
-        for team in favorites:
-            lines.append(f"- {team['team_name']}")
+        for index, team in enumerate(favorites, start=1):
+            lines.append(f"{index}. {team['team_name']}")
+            next_match = team.get("next_match")
+            last_match = team.get("last_match")
+            if next_match:
+                lines.append(
+                    "Next: "
+                    f"{next_match['home']} vs {next_match['away']} "
+                    f"({format_datetime(next_match.get('date'), timezone)})"
+                )
+            else:
+                lines.append("Next: unavailable")
+            if last_match:
+                lines.append(
+                    "Last: "
+                    f"{last_match['home']} vs {last_match['away']} "
+                    f"{last_match.get('score', '-')}"
+                )
+            lines.append("")
     lines.append("")
     lines.append(f"Pending notifications: {pending_count}")
     lines.append(f"Timezone: {timezone}")

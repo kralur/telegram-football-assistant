@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 
 from src.services.match_service import MatchService
 from src.services.search_service import SearchService
+from src.infrastructure.football_api_client import FootballApiError
 
 
 class FakeCache:
@@ -21,6 +22,9 @@ class FakeApiClient:
         self.today_calls = 0
         self.fixture_calls = 0
         self.team_search_calls = 0
+        self.next_calls = 0
+        self.standings_calls = []
+        self.scorers_calls = []
 
     async def get_today_fixtures(self):
         self.today_calls += 1
@@ -35,7 +39,7 @@ class FakeApiClient:
                     "home": {"name": "Arsenal"},
                     "away": {"name": "Chelsea"},
                 },
-                "league": {"name": "Premier League"},
+                "league": {"id": 39, "name": "Premier League"},
                 "goals": {"home": None, "away": None},
             },
             {
@@ -48,7 +52,7 @@ class FakeApiClient:
                     "home": {"name": "Brest"},
                     "away": {"name": "Reims"},
                 },
-                "league": {"name": "Unknown league"},
+                "league": {"id": 999, "name": "Unknown league"},
                 "goals": {"home": None, "away": None},
             }
         ]
@@ -60,6 +64,12 @@ class FakeApiClient:
         return []
 
     async def get_standings(self, league_id: int, season: int):
+        self.standings_calls.append(season)
+        if season > 2024:
+            raise FootballApiError(
+                "Football data provider returned an error. Please try again later.",
+                details="plan: Free plans do not have access to this season, try from 2022 to 2024.",
+            )
         return [
             {
                 "rank": 1,
@@ -70,6 +80,12 @@ class FakeApiClient:
         ]
 
     async def get_top_scorers(self, league_id: int, season: int):
+        self.scorers_calls.append(season)
+        if season > 2024:
+            raise FootballApiError(
+                "Football data provider returned an error. Please try again later.",
+                details="plan: Free plans do not have access to this season, try from 2022 to 2024.",
+            )
         return [
             {
                 "player": {"name": "Erling Haaland"},
@@ -94,7 +110,7 @@ class FakeApiClient:
                 "home": {"name": "Real Madrid"},
                 "away": {"name": "Barcelona"},
             },
-            "league": {"name": "La Liga"},
+            "league": {"id": 140, "name": "La Liga"},
             "goals": {"home": None, "away": None},
         }
 
@@ -105,7 +121,47 @@ class FakeApiClient:
         ]
 
     async def get_next_fixtures_by_team_id(self, team_id: int, limit: int = 5):
-        return []
+        self.next_calls += 1
+        raise FootballApiError(
+            "Football data provider returned an error. Please try again later.",
+            details="plan: Free plans do not have access to the Next parameter.",
+        )
+
+    async def get_last_fixtures_by_team_id(self, team_id: int, limit: int = 5):
+        raise FootballApiError(
+            "Football data provider returned an error. Please try again later.",
+            details="plan: Free plans do not have access to the Last parameter.",
+        )
+
+    async def get_fixtures_by_team_and_season(self, team_id: int, season: int):
+        return [
+            {
+                "fixture": {
+                    "id": 21,
+                    "date": "2026-04-02T15:00:00+00:00",
+                    "status": {"short": "NS", "long": "Not Started"},
+                },
+                "teams": {
+                    "home": {"name": "Arsenal"},
+                    "away": {"name": "Chelsea"},
+                },
+                "league": {"id": 39, "name": "Premier League"},
+                "goals": {"home": None, "away": None},
+            },
+            {
+                "fixture": {
+                    "id": 22,
+                    "date": "2026-03-20T15:00:00+00:00",
+                    "status": {"short": "FT", "long": "Match Finished"},
+                },
+                "teams": {
+                    "home": {"name": "Liverpool"},
+                    "away": {"name": "Arsenal"},
+                },
+                "league": {"id": 39, "name": "Premier League"},
+                "goals": {"home": 2, "away": 1},
+            },
+        ]
 
 
 class MatchServiceTests(unittest.IsolatedAsyncioTestCase):
@@ -137,11 +193,13 @@ class MatchServiceTests(unittest.IsolatedAsyncioTestCase):
         table = await self.service.get_standings("premier league")
         self.assertEqual(table[0]["team"], "Liverpool")
         self.assertEqual(table[0]["played"], 30)
+        self.assertEqual(self.api.standings_calls, [2024])
 
     async def test_get_top_scorers_normalizes_rows(self):
         scorers = await self.service.get_top_scorers("premier league")
         self.assertEqual(scorers[0]["player"], "Erling Haaland")
         self.assertEqual(scorers[0]["goals"], 24)
+        self.assertEqual(self.api.scorers_calls, [2024])
 
     async def test_search_service_normalizes_and_caches(self):
         first = await self.search_service.search_teams("Arsenal")
@@ -161,6 +219,25 @@ class MatchServiceTests(unittest.IsolatedAsyncioTestCase):
         results = await self.search_service.search_teams("real")
 
         self.assertTrue(any(team["name"] == "Real Madrid" for team in results))
+
+    async def test_filter_matches_by_league_keeps_only_requested_league(self):
+        matches = await self.service.get_today_matches()
+
+        filtered = self.service.filter_matches_by_league(matches, league_id=39)
+
+        self.assertEqual(len(filtered), 1)
+        self.assertEqual(filtered[0]["home"], "Arsenal")
+
+    async def test_get_team_matches_falls_back_when_next_is_not_available(self):
+        matches = await self.service.get_team_matches(team_id=77, limit=1)
+
+        self.assertEqual(self.api.next_calls, 1)
+        self.assertEqual(matches[0]["id"], 21)
+
+    async def test_get_last_team_matches_falls_back_when_last_is_not_available(self):
+        matches = await self.service.get_last_team_matches(team_id=77, limit=1)
+
+        self.assertEqual(matches[0]["id"], 22)
 
     def test_current_season_uses_start_year(self):
         self.assertEqual(self.service.get_current_season(datetime(2026, 3, 28, tzinfo=UTC)), 2025)
