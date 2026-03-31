@@ -17,17 +17,28 @@ class FootballApiClient:
     BASE_URL = "https://v3.football.api-sports.io"
 
     def __init__(self):
-        if not FOOTBALL_API_KEY:
-            raise ValueError("FOOTBALL_API_KEY is missing")
-
         self.logger = logging.getLogger("football_bot")
-        self.client = httpx.AsyncClient(
-            base_url=self.BASE_URL,
-            headers={"x-apisports-key": FOOTBALL_API_KEY},
-            timeout=10.0,
-        )
+        self.api_key = FOOTBALL_API_KEY
+        self.client = None
+
+        if self.api_key:
+            self.client = httpx.AsyncClient(
+                base_url=self.BASE_URL,
+                headers={"x-apisports-key": self.api_key},
+                timeout=10.0,
+            )
+
+    def _ensure_configured(self):
+        if self.client is None:
+            self.logger.warning("Football API key is not configured")
+            raise FootballApiError(
+                "API key is not configured",
+                details="FOOTBALL_API_KEY is missing",
+            )
 
     async def _get(self, endpoint: str, params: dict):
+        self._ensure_configured()
+
         try:
             response = await self.client.get(endpoint, params=params)
             response.raise_for_status()
@@ -159,4 +170,5 @@ class FootballApiClient:
         return await self._get("/fixtures/players", {"fixture": match_id})
 
     async def aclose(self):
-        await self.client.aclose()
+        if self.client is not None:
+            await self.client.aclose()

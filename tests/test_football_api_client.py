@@ -34,6 +34,16 @@ class FakeLogger:
 
 
 class FootballApiClientTests(unittest.IsolatedAsyncioTestCase):
+    async def test_get_raises_clear_error_when_api_key_missing(self):
+        client = FootballApiClient.__new__(FootballApiClient)
+        client.client = None
+        client.logger = FakeLogger()
+
+        with self.assertRaises(FootballApiError) as context:
+            await client._get("/fixtures", {"date": "2026-03-28"})
+
+        self.assertEqual(str(context.exception), "API key is not configured")
+
     async def test_get_raises_user_friendly_error_on_payload_limit(self):
         client = FootballApiClient.__new__(FootballApiClient)
         client.client = FakeAsyncClient(

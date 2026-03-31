@@ -1,0 +1,118 @@
+import sys
+from contextlib import asynccontextmanager
+from pathlib import Path
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+
+from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+
+from src.config.settings import WEBAPP_HOST, WEBAPP_PORT
+from src.core.container import ServiceContainer, build_service_container
+from src.infrastructure.football_api_client import FootballApiError
+from src.services.match_service import MatchService
+from src.web.presenters import serialize_favorites, serialize_match, serialize_matches
+
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+
+
+def create_web_app(services: ServiceContainer | None = None):
+    owned_container = services is None
+    state = {"services": services}
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        if state["services"] is None:
+            state["services"] = build_service_container(include_analysis=False)
+
+        app.state.services = state["services"]
+        app.state.services.logger.info("Mini app backend ready")
+
+        try:
+            yield
+        finally:
+            if owned_container and app.state.services is not None:
+                await app.state.services.aclose()
+
+    app = FastAPI(title="Football Assistant WebApp", lifespan=lifespan)
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+    @app.exception_handler(FootballApiError)
+    async def football_api_error_handler(_, exc: FootballApiError):
+        return JSONResponse(
+            status_code=503,
+            content={
+                "error": exc.user_message,
+                "details": exc.details,
+            },
+        )
+
+    @app.get("/")
+    async def root():
+        return {"status": "ok"}
+
+    @app.get("/app")
+    async def index():
+        return FileResponse(STATIC_DIR / "index.html")
+
+    @app.get("/api/health")
+    async def health():
+        return {"ok": True}
+
+    @app.get("/api/leagues")
+    async def leagues():
+        return {"leagues": MatchService.supported_leagues()}
+
+    @app.get("/api/today")
+    async def today(league_id: int | None = Query(default=None)):
+        match_service = app.state.services.match_service
+        matches = await match_service.get_today_matches()
+        if league_id is not None:
+            matches = match_service.filter_matches_by_league(matches, league_id=league_id)
+        return {"matches": serialize_matches(matches)}
+
+    @app.get("/api/live")
+    async def live():
+        matches = await app.state.services.match_service.get_live_matches()
+        return {"matches": serialize_matches(matches)}
+
+    @app.get("/api/match/{match_id}")
+    async def match_details(match_id: int):
+        match = await app.state.services.match_service.get_match(match_id)
+        if not match:
+            raise HTTPException(status_code=404, detail="Match not found")
+        return {"match": serialize_match(match)}
+
+    @app.get("/api/match/{match_id}/events")
+    async def match_events(match_id: int):
+        return {"events": await app.state.services.match_service.get_match_events(match_id)}
+
+    @app.get("/api/match/{match_id}/statistics")
+    async def match_statistics(match_id: int):
+        return {"statistics": await app.state.services.match_service.get_match_statistics(match_id)}
+
+    @app.get("/api/match/{match_id}/lineups")
+    async def match_lineups(match_id: int):
+        return {"lineups": await app.state.services.match_service.get_match_lineups(match_id)}
+
+    @app.get("/api/match/{match_id}/players")
+    async def match_players(match_id: int):
+        return {"players": await app.state.services.match_service.get_match_players(match_id)}
+
+    @app.get("/api/favorites/{user_id}")
+    async def favorites(user_id: int):
+        favorites_data = await app.state.services.favorites_service.get_user_favorites_overview(user_id)
+        return {"favorites": serialize_favorites(favorites_data)}
+
+    return app
+
+
+app = create_web_app()
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run("src.web.app:app", host=WEBAPP_HOST, port=WEBAPP_PORT, reload=False)

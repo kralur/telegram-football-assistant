@@ -19,5 +19,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project files
 COPY . .
 
-# Run bot
-CMD ["python", "-m", "src.app"]
+# Run platform-specific entrypoint
+CMD ["python", "-m", "src.run"]
