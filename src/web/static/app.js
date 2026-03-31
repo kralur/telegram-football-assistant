@@ -12,6 +12,7 @@ const ui = {
     metricMode: document.getElementById("metric-mode"),
     metricFocus: document.getElementById("metric-focus"),
     metricTip: document.getElementById("metric-tip"),
+    contentGrid: document.getElementById("content-grid"),
     tabs: Array.from(document.querySelectorAll(".tab-button")),
     leagueBar: document.getElementById("league-bar"),
     panelTitle: document.getElementById("panel-title"),
@@ -95,6 +96,13 @@ function setMetrics(mode, focus, tip) {
     ui.metricTip.textContent = tip;
 }
 
+function setDetailPanelVisible(visible, title = "Match Details") {
+    ui.contentGrid.classList.toggle("is-wide", !visible);
+    const detailPanel = ui.detailShell.closest(".detail-panel");
+    detailPanel.classList.toggle("is-hidden", !visible);
+    detailPanel.querySelector("h2").textContent = title;
+}
+
 function syncDetailTabButtons() {
     ui.detailTabs.forEach((tabButton) => {
         tabButton.classList.toggle("is-active", tabButton.dataset.detail === state.detailTab);
@@ -122,6 +130,22 @@ function resetDetailPanel(message = "Tap any match card to see summary, events, 
     ui.detailLoading.classList.add("is-hidden");
     ui.detailContent.innerHTML = "";
     ui.summaryCard.innerHTML = "";
+}
+
+async function copyWithFeedback(button, text, successText) {
+    const originalText = button.textContent;
+    try {
+        await navigator.clipboard.writeText(text);
+        button.textContent = successText;
+        ui.heroStatus.textContent = successText;
+    } catch (_) {
+        button.textContent = "Copy failed";
+        ui.heroStatus.textContent = "Copy failed";
+    } finally {
+        window.setTimeout(() => {
+            button.textContent = originalText;
+        }, 1400);
+    }
 }
 
 function formatKickoff(value) {
@@ -170,10 +194,7 @@ function renderMatchCard(match, accentLabel = "Open details") {
 
     const [openButton, copyButton] = card.querySelectorAll("button");
     openButton.addEventListener("click", () => openMatchDetails(match.id, match));
-    copyButton.addEventListener("click", async () => {
-        await navigator.clipboard.writeText(String(match.id));
-        ui.heroStatus.textContent = `Match #${match.id} copied`;
-    });
+    copyButton.addEventListener("click", () => copyWithFeedback(copyButton, String(match.id), "Copied"));
     return card;
 }
 
@@ -205,19 +226,17 @@ function renderFavoriteCard(item) {
         </div>
         ${nextBlock}
         ${lastBlock}
+        <p class="match-time">Add and remove teams in Telegram Search. Mini App shows the teams you already saved there.</p>
         <div class="card-actions">
-            <button class="primary"${nextMatch ? "" : " disabled"}>Open next</button>
-            <button class="secondary"${nextMatch ? "" : " disabled"}>Next match ID</button>
+            <button class="primary"${nextMatch ? "" : " disabled"}>Open next match</button>
+            <button class="secondary"${nextMatch ? "" : " disabled"}>Copy next ID</button>
         </div>
     `;
 
     const [openButton, copyButton] = card.querySelectorAll("button");
     if (nextMatch) {
         openButton.addEventListener("click", () => openMatchDetails(nextMatch.id, nextMatch));
-        copyButton.addEventListener("click", async () => {
-            await navigator.clipboard.writeText(String(nextMatch.id));
-            ui.heroStatus.textContent = `${item.team_name} next match copied`;
-        });
+        copyButton.addEventListener("click", () => copyWithFeedback(copyButton, String(nextMatch.id), "Copied"));
     }
     return card;
 }
@@ -380,6 +399,7 @@ async function openMatchDetails(matchId, seedMatch = null) {
 }
 
 async function loadLive() {
+    setDetailPanelVisible(true, "Match Details");
     resetDetailPanel("Pick a live or featured card to open the match summary.");
     hideLeagueBar();
     ui.panelTitle.textContent = "Live Matches";
@@ -407,6 +427,7 @@ async function loadLive() {
 }
 
 async function loadMatches() {
+    setDetailPanelVisible(true, "Match Details");
     resetDetailPanel("Pick an upcoming or featured match to open the summary first.");
     hideLeagueBar();
     ui.panelTitle.textContent = "Upcoming Matches";
@@ -440,6 +461,7 @@ async function loadMatches() {
 }
 
 async function loadStandings() {
+    setDetailPanelVisible(false);
     resetDetailPanel("Standings do not auto-open match details. Switch back to Matches or Live to inspect a game.");
     ui.panelTitle.textContent = "Standings";
     ui.panelMeta.textContent = "";
@@ -491,11 +513,12 @@ async function loadStandings() {
 }
 
 async function loadFavorites() {
-    resetDetailPanel("Open a favorite team card to jump into its next match.");
+    setDetailPanelVisible(true, "Next Match");
+    resetDetailPanel("Favorites are managed from Telegram Search. Open a saved team card to inspect its next match.");
     hideLeagueBar();
     ui.panelTitle.textContent = "Favorites";
     ui.panelMeta.textContent = "";
-    setMetrics("Mini App", "Personal watchlist", "Open inside Telegram to sync your teams");
+    setMetrics("Mini App", "Personal watchlist", "Add teams in Telegram Search, then open their next match here");
     setError("");
     setLoading(true, "Loading favorites...");
     setEmpty("", false);

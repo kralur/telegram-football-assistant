@@ -255,3 +255,110 @@ src.infrastructure.football_api_client.FootballApiError: Daily API request limit
 2026-03-31 14:31:12,926 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:31:42 +05)" executed successfully
 2026-03-31 14:31:42,915 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:32:12 +05)" (scheduled at 2026-03-31 14:31:42.904641+05:00)
 2026-03-31 14:31:42,924 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:32:12 +05)" executed successfully
+2026-03-31 14:32:12,913 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:32:42 +05)" (scheduled at 2026-03-31 14:32:12.904641+05:00)
+2026-03-31 14:32:12,924 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:32:42 +05)" executed successfully
+2026-03-31 14:32:38,972 | INFO | aiogram.event | Update id=867726050 is handled. Duration 751 ms by bot id=8278692462
+2026-03-31 14:32:42,915 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:33:12 +05)" (scheduled at 2026-03-31 14:32:42.904641+05:00)
+2026-03-31 14:32:44,437 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:44,442 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:32:44,563 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:44,710 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:44,719 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?date=2026-03-31&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:44,841 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:44,875 | INFO | aiogram.event | Update id=867726051 is handled. Duration 681 ms by bot id=8278692462
+2026-03-31 14:32:44,966 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:44,971 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 22055, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:32:45,089 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:45,217 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:45,356 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:45,607 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:45,612 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 18259, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:32:45,734 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:45,861 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:45,985 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:32:45,993 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:33:12 +05)" executed successfully
+2026-03-31 14:33:08,851 | INFO | aiogram.event | Update id=867726052 is handled. Duration 730 ms by bot id=8278692462
+2026-03-31 14:33:12,917 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:33:42 +05)" (scheduled at 2026-03-31 14:33:12.904641+05:00)
+2026-03-31 14:33:12,928 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:33:42 +05)" executed successfully
+2026-03-31 14:33:42,910 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:34:12 +05)" (scheduled at 2026-03-31 14:33:42.904641+05:00)
+2026-03-31 14:33:43,243 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:33:43,250 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:33:43,378 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:33:43,512 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:33:43,642 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:33:43,650 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:34:12 +05)" executed successfully
+2026-03-31 14:34:12,911 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:34:42 +05)" (scheduled at 2026-03-31 14:34:12.904641+05:00)
+2026-03-31 14:34:12,920 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:34:42 +05)" executed successfully
+2026-03-31 14:34:42,919 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:35:12 +05)" (scheduled at 2026-03-31 14:34:42.904641+05:00)
+2026-03-31 14:34:42,928 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:35:12 +05)" executed successfully
+2026-03-31 14:35:12,908 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:35:42 +05)" (scheduled at 2026-03-31 14:35:12.904641+05:00)
+2026-03-31 14:35:12,918 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:35:42 +05)" executed successfully
+2026-03-31 14:35:42,916 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:36:12 +05)" (scheduled at 2026-03-31 14:35:42.904641+05:00)
+2026-03-31 14:35:42,929 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:36:12 +05)" executed successfully
+2026-03-31 14:36:12,914 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:36:42 +05)" (scheduled at 2026-03-31 14:36:12.904641+05:00)
+2026-03-31 14:36:12,924 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:36:42 +05)" executed successfully
+2026-03-31 14:36:42,918 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:37:12 +05)" (scheduled at 2026-03-31 14:36:42.904641+05:00)
+2026-03-31 14:36:42,925 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:37:12 +05)" executed successfully
+2026-03-31 14:36:47,836 | INFO | aiogram.event | Update id=867726053 is handled. Duration 947 ms by bot id=8278692462
+2026-03-31 14:36:50,526 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?id=1537256&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:36:50,732 | INFO | aiogram.event | Update id=867726054 is handled. Duration 721 ms by bot id=8278692462
+2026-03-31 14:36:55,573 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures/lineups?fixture=1537256 "HTTP/1.1 200 OK"
+2026-03-31 14:36:55,810 | INFO | aiogram.event | Update id=867726055 is handled. Duration 576 ms by bot id=8278692462
+2026-03-31 14:36:58,365 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures/players?fixture=1537256 "HTTP/1.1 200 OK"
+2026-03-31 14:36:58,543 | INFO | aiogram.event | Update id=867726056 is handled. Duration 524 ms by bot id=8278692462
+2026-03-31 14:37:01,478 | INFO | aiogram.event | Update id=867726057 is handled. Duration 637 ms by bot id=8278692462
+2026-03-31 14:37:04,130 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?live=all&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:37:04,308 | INFO | aiogram.event | Update id=867726058 is handled. Duration 670 ms by bot id=8278692462
+2026-03-31 14:37:06,414 | INFO | aiogram.event | Update id=867726059 is handled. Duration 354 ms by bot id=8278692462
+2026-03-31 14:37:08,869 | INFO | aiogram.event | Update id=867726060 is handled. Duration 344 ms by bot id=8278692462
+2026-03-31 14:37:12,915 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:37:42 +05)" (scheduled at 2026-03-31 14:37:12.904641+05:00)
+2026-03-31 14:37:12,921 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:37:42 +05)" executed successfully
+2026-03-31 14:37:13,097 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=real "HTTP/1.1 200 OK"
+2026-03-31 14:37:13,280 | INFO | aiogram.event | Update id=867726061 is handled. Duration 543 ms by bot id=8278692462
+2026-03-31 14:37:15,951 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&last=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:37:15,957 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'last': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Last parameter.
+2026-03-31 14:37:16,079 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:37:16,210 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:37:16,339 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:37:16,462 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&last=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:37:16,466 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 22055, 'last': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Last parameter.
+2026-03-31 14:37:16,589 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:37:16,712 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&last=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:37:16,717 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 18259, 'last': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Last parameter.
+2026-03-31 14:37:16,845 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:37:16,971 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&last=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:37:16,976 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'last': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Last parameter.
+2026-03-31 14:37:17,097 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:37:17,274 | INFO | aiogram.event | Update id=867726062 is handled. Duration 1608 ms by bot id=8278692462
+2026-03-31 14:37:42,920 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:38:12 +05)" (scheduled at 2026-03-31 14:37:42.904641+05:00)
+2026-03-31 14:37:42,931 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:38:12 +05)" executed successfully
+2026-03-31 14:38:12,911 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:38:42 +05)" (scheduled at 2026-03-31 14:38:12.904641+05:00)
+2026-03-31 14:38:13,333 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:13,338 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:38:13,464 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:13,592 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:13,723 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:13,848 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:13,853 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 22055, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:38:13,974 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:14,103 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:14,232 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:14,355 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:14,357 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 18259, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:38:14,480 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:14,610 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:14,746 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:38:14,755 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:38:42 +05)" executed successfully
+2026-03-31 14:38:42,916 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:39:12 +05)" (scheduled at 2026-03-31 14:38:42.904641+05:00)
+2026-03-31 14:38:42,928 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:39:12 +05)" executed successfully
+2026-03-31 14:39:12,916 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:39:42 +05)" (scheduled at 2026-03-31 14:39:12.904641+05:00)
+2026-03-31 14:39:13,239 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:39:13,244 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:39:13,368 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:39:13,495 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:39:13,624 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:39:13,635 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:39:42 +05)" executed successfully
+2026-03-31 14:39:42,915 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:40:12 +05)" (scheduled at 2026-03-31 14:39:42.904641+05:00)
+2026-03-31 14:39:42,925 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:40:12 +05)" executed successfully
+2026-03-31 14:40:12,909 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:40:42 +05)" (scheduled at 2026-03-31 14:40:12.904641+05:00)
+2026-03-31 14:40:12,919 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:40:42 +05)" executed successfully

@@ -176,6 +176,10 @@ button {
     gap: 16px;
 }
 
+.content-grid.is-wide {
+    grid-template-columns: 1fr;
+}
+
 .panel {
     background: rgba(16, 26, 42, 0.92);
     border-radius: 26px;
