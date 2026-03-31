@@ -317,6 +317,39 @@ class MatchServiceTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.api.next_calls, 1)
         self.assertEqual(matches[0]["id"], 21)
 
+    async def test_get_team_matches_fallback_tries_supported_plan_seasons(self):
+        calls = []
+
+        async def team_season_loader(team_id: int, season: int):
+            calls.append(season)
+            if season == 2024:
+                raise FootballApiError(
+                    "Football data provider returned an error. Please try again later.",
+                    details="plan: Free plans do not have access to this season, try from 2022 to 2024.",
+                )
+            return [
+                {
+                    "fixture": {
+                        "id": 55,
+                        "date": "2099-04-02T15:00:00+00:00",
+                        "status": {"short": "NS", "long": "Not Started"},
+                    },
+                    "teams": {
+                        "home": {"name": "Arsenal"},
+                        "away": {"name": "Chelsea"},
+                    },
+                    "league": {"id": 39, "name": "Premier League"},
+                    "goals": {"home": None, "away": None},
+                }
+            ]
+
+        self.api.get_fixtures_by_team_and_season = team_season_loader
+        matches = await self.service.get_team_matches(team_id=77, limit=1)
+
+        self.assertEqual(matches[0]["id"], 55)
+        self.assertIn(2024, calls)
+        self.assertIn(2023, calls)
+
     async def test_get_upcoming_matches_falls_back_when_next_is_not_available(self):
         matches = await self.service.get_upcoming_matches(limit=1)
 

@@ -274,6 +274,11 @@ button {
     font-weight: 700;
 }
 
+.card-actions .secondary {
+    background: rgba(57, 128, 255, 0.12);
+    color: #9fc1ff;
+}
+
 .detail-placeholder,
 .empty-state {
     padding: 18px;
@@ -336,7 +341,7 @@ button {
 
     .tabs {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .tab-button {

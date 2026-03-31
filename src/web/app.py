@@ -15,6 +15,7 @@ from src.config.settings import TELEGRAM_BOT_TOKEN, WEBAPP_HOST, WEBAPP_PORT
 from src.core.container import ServiceContainer, build_service_container
 from src.infrastructure.football_api_client import FootballApiError
 from src.services.match_service import MatchService
+from src.web.fallback_data import featured_matches, featured_standings
 from src.web.presenters import serialize_favorites, serialize_match, serialize_matches
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -114,19 +115,59 @@ def create_web_app(services: ServiceContainer | None = None):
 
     @app.get("/live")
     async def live_alias():
-        matches = await app.state.services.match_service.get_live_matches()
-        return {"items": serialize_matches(matches)}
+        try:
+            matches = await app.state.services.match_service.get_live_matches()
+        except FootballApiError:
+            matches = []
+
+        if matches:
+            return {"items": serialize_matches(matches), "source": "live"}
+
+        try:
+            today_matches = await app.state.services.match_service.get_today_matches()
+        except FootballApiError:
+            today_matches = []
+
+        if today_matches:
+            return {"items": serialize_matches(today_matches[:6]), "source": "today"}
+
+        return {"items": featured_matches()[:4], "source": "featured"}
 
     @app.get("/matches")
     async def matches():
-        matches_data = await app.state.services.match_service.get_upcoming_matches(limit=12)
-        return {"items": serialize_matches(matches_data)}
+        matches_data = []
+        source = "featured"
+        try:
+            matches_data = await app.state.services.match_service.get_today_matches()
+        except FootballApiError:
+            matches_data = []
+
+        if not matches_data:
+            try:
+                matches_data = await app.state.services.match_service.get_upcoming_matches(limit=12)
+                source = "upcoming" if matches_data else source
+            except FootballApiError:
+                matches_data = []
+        else:
+            source = "today"
+
+        if matches_data:
+            return {"items": serialize_matches(matches_data[:12]), "source": source}
+
+        return {"items": featured_matches(), "source": "featured"}
 
     @app.get("/standings")
     async def standings(league_id: int | None = Query(default=None)):
         league = resolve_league(league_id)
-        rows = await app.state.services.match_service.get_standings(league["name"])
-        return {"league": league, "items": rows}
+        try:
+            rows = await app.state.services.match_service.get_standings(league["name"])
+        except FootballApiError:
+            rows = []
+
+        if rows:
+            return {"league": league, "items": rows, "source": "api"}
+
+        return {"league": league, "items": featured_standings(league), "source": "featured"}
 
     @app.get("/api/match/{match_id}")
     async def match_details(match_id: int):
@@ -155,6 +196,22 @@ def create_web_app(services: ServiceContainer | None = None):
     async def favorites(user_id: int):
         favorites_data = await app.state.services.favorites_service.get_user_favorites_overview(user_id)
         return {"favorites": serialize_favorites(favorites_data)}
+
+    @app.get("/favorites")
+    async def favorites_alias(user_id: int | None = Query(default=None)):
+        if user_id is None:
+            return {
+                "items": [],
+                "source": "telegram-required",
+                "message": "Open Match Center inside Telegram to load your favorites.",
+            }
+
+        favorites_data = await app.state.services.favorites_service.get_user_favorites_overview(user_id)
+        return {
+            "items": serialize_favorites(favorites_data),
+            "source": "api",
+            "message": "Favorites synced from your Telegram profile.",
+        }
 
     return app
 

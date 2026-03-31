@@ -147,6 +147,7 @@ class WebAppTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["items"][0]["home"], "Arsenal")
+        self.assertEqual(response.json()["source"], "live")
 
     def test_matches_endpoint_returns_upcoming_items(self):
         with self.build_client() as client:
@@ -154,6 +155,7 @@ class WebAppTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()["items"]), 2)
+        self.assertEqual(response.json()["source"], "today")
 
     def test_standings_endpoint_returns_league_and_items(self):
         with self.build_client() as client:
@@ -163,6 +165,23 @@ class WebAppTests(unittest.TestCase):
         payload = response.json()
         self.assertEqual(payload["league"]["id"], 39)
         self.assertEqual(payload["items"][0]["team"], "Arsenal")
+        self.assertEqual(payload["source"], "api")
+
+    def test_matches_endpoint_uses_featured_fallback_when_api_is_empty(self):
+        class EmptyMatchService(FakeMatchService):
+            async def get_today_matches(self):
+                return []
+
+            async def get_upcoming_matches(self, limit: int = 10):
+                raise FootballApiError("No data", details="provider issue")
+
+        with self.build_client(match_service=EmptyMatchService()) as client:
+            response = client.get("/matches")
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["source"], "featured")
+        self.assertTrue(payload["items"])
 
     def test_favorites_endpoint_returns_overview(self):
         with self.build_client() as client:
@@ -172,6 +191,24 @@ class WebAppTests(unittest.TestCase):
         payload = response.json()
         self.assertEqual(payload["favorites"][0]["team_name"], "Arsenal")
         self.assertEqual(payload["favorites"][0]["next_match"]["id"], 1)
+
+    def test_favorites_alias_returns_message_without_telegram_user(self):
+        with self.build_client() as client:
+            response = client.get("/favorites")
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["source"], "telegram-required")
+        self.assertFalse(payload["items"])
+
+    def test_favorites_alias_returns_items_when_user_id_is_present(self):
+        with self.build_client() as client:
+            response = client.get("/favorites?user_id=7")
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["source"], "api")
+        self.assertEqual(payload["items"][0]["team_name"], "Arsenal")
 
     def test_football_api_error_becomes_service_unavailable(self):
         with self.build_client(match_service=ErrorMatchService()) as client:

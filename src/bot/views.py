@@ -18,8 +18,8 @@ def main_menu_text(timezone: str, user_label: str | None = None):
     return (
         "Football Assistant\n\n"
         f"{greeting}"
-        "Quick actions stay here in Telegram.\n"
-        "Open Match Center for deeper browsing, standings, and richer match details.\n\n"
+        "Telegram is now the quick control panel: Today, Live, Favorites, Search, and reminders.\n"
+        "Open Match Center for standings, richer match details, and deeper browsing.\n\n"
         f"Current timezone: {timezone}"
     )
 
@@ -28,7 +28,7 @@ def help_text():
     return (
         "How to use the bot\n\n"
         "1. Use Telegram for quick actions: Today, Live, Favorites, Search.\n"
-        "2. Use Mini App for richer browsing: upcoming matches, standings, deeper match details.\n"
+        "2. Use Mini App for richer browsing: upcoming matches, standings, favorites dashboard, deeper match details.\n"
         "3. Tap Notify under a match to schedule a reminder 15 minutes before kickoff.\n"
         "4. Search for a team and add it to Favorites for faster follow-up.\n"
         "5. Set your timezone so all displayed times are local for you."

@@ -118,7 +118,7 @@ class BotUiHelperTests(unittest.TestCase):
         markup = main_menu_keyboard()
 
         first_row = markup.inline_keyboard[0]
-        self.assertEqual(first_row[0].text, "⚽ Open Match Center")
+        self.assertEqual(first_row[0].text, "Open Match Center")
         self.assertIsNotNone(first_row[0].web_app)
         labels = [button.text for row in markup.inline_keyboard[1:] for button in row]
         self.assertNotIn("Standings", labels)

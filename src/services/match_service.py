@@ -267,27 +267,43 @@ class MatchService:
         return []
 
     async def _fallback_team_matches(self, team_id: int, limit: int, direction: str):
-        season = self.get_current_season()
-        raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
-        matches = self._normalize_fixtures(raw_matches)
         now = datetime.now(UTC)
+        last_exc = None
 
-        if direction == "next":
-            filtered = [
-                match
-                for match in matches
-                if match.get("date") and self._parse_match_datetime(match["date"]) >= now
-            ]
-            filtered.sort(key=lambda match: match.get("date") or "")
-        else:
-            filtered = [
-                match
-                for match in matches
-                if match.get("date") and self._parse_match_datetime(match["date"]) <= now
-            ]
-            filtered.sort(key=lambda match: match.get("date") or "", reverse=True)
+        for season in self._supported_seasons_for_plan():
+            try:
+                raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+            except FootballApiError as exc:
+                last_exc = exc
+                self.logger.info(
+                    "Falling back to older team season for team=%s after error: %s",
+                    team_id,
+                    exc.details,
+                )
+                continue
 
-        return filtered[:limit]
+            matches = self._normalize_fixtures(raw_matches)
+            if direction == "next":
+                filtered = [
+                    match
+                    for match in matches
+                    if match.get("date") and self._parse_match_datetime(match["date"]) >= now
+                ]
+                filtered.sort(key=lambda match: match.get("date") or "")
+            else:
+                filtered = [
+                    match
+                    for match in matches
+                    if match.get("date") and self._parse_match_datetime(match["date"]) <= now
+                ]
+                filtered.sort(key=lambda match: match.get("date") or "", reverse=True)
+
+            if filtered:
+                return filtered[:limit]
+
+        if last_exc:
+            raise last_exc
+        return []
 
     async def _fallback_upcoming_matches(self, limit: int):
         today = datetime.now(UTC).date()

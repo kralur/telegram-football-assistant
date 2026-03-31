@@ -30,7 +30,7 @@ def main_menu_keyboard():
             0,
             [
                 InlineKeyboardButton(
-                    text="⚽ Open Match Center",
+                    text="Open Match Center",
                     web_app=WebAppInfo(url=WEBAPP_URL),
                 )
             ],

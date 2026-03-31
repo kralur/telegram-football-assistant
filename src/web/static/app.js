@@ -2,7 +2,9 @@ const state = {
     tab: "matches",
     selectedLeagueId: null,
     selectedMatchId: null,
+    selectedMatchSeed: null,
     detailTab: "events",
+    telegramUserId: null,
 };
 
 const ui = {
@@ -33,6 +35,7 @@ if (telegramApp) {
     telegramApp.ready();
     telegramApp.expand();
     ui.heroStatus.textContent = "Opened in Telegram";
+    state.telegramUserId = telegramApp.initDataUnsafe?.user?.id ?? null;
 }
 
 ui.tabs.forEach((button) => {
@@ -52,7 +55,7 @@ ui.detailTabs.forEach((button) => {
             tabButton.classList.toggle("is-active", tabButton.dataset.detail === state.detailTab);
         });
         if (state.selectedMatchId) {
-            openMatchDetails(state.selectedMatchId);
+            openMatchDetails(state.selectedMatchId, state.selectedMatchSeed);
         }
     });
 });
@@ -134,11 +137,56 @@ function renderMatchCard(match, accentLabel = "Open details") {
     `;
 
     const [openButton, copyButton] = card.querySelectorAll("button");
-    openButton.addEventListener("click", () => openMatchDetails(match.id));
+    openButton.addEventListener("click", () => openMatchDetails(match.id, match));
     copyButton.addEventListener("click", async () => {
         await navigator.clipboard.writeText(String(match.id));
         ui.heroStatus.textContent = `Match #${match.id} copied`;
     });
+    return card;
+}
+
+function renderFavoriteCard(item) {
+    const card = document.createElement("article");
+    card.className = "match-card";
+
+    const nextMatch = item.next_match;
+    const lastMatch = item.last_match;
+    const nextBlock = nextMatch
+        ? `
+            <p class="match-time">Next match</p>
+            <p class="match-title">${nextMatch.home} vs ${nextMatch.away}</p>
+            <p class="match-league">${nextMatch.country} - ${nextMatch.league}</p>
+            <p class="match-time">${formatKickoff(nextMatch.date)}</p>
+        `
+        : `<p class="match-time">No upcoming match available.</p>`;
+    const lastBlock = lastMatch
+        ? `<p class="match-time">Last result: ${lastMatch.home} ${lastMatch.score} ${lastMatch.away}</p>`
+        : `<p class="match-time">Last result unavailable.</p>`;
+
+    card.innerHTML = `
+        <div class="match-header">
+            <div>
+                <h3 class="match-title">${item.team_name}</h3>
+                <p class="match-league">Favorite team</p>
+            </div>
+            <span class="status-badge">${item.team_id || "-"}</span>
+        </div>
+        ${nextBlock}
+        ${lastBlock}
+        <div class="card-actions">
+            <button class="primary"${nextMatch ? "" : " disabled"}>Open next</button>
+            <button class="secondary"${nextMatch ? "" : " disabled"}>Next match ID</button>
+        </div>
+    `;
+
+    const [openButton, copyButton] = card.querySelectorAll("button");
+    if (nextMatch) {
+        openButton.addEventListener("click", () => openMatchDetails(nextMatch.id, nextMatch));
+        copyButton.addEventListener("click", async () => {
+            await navigator.clipboard.writeText(String(nextMatch.id));
+            ui.heroStatus.textContent = `${item.team_name} next match copied`;
+        });
+    }
     return card;
 }
 
@@ -247,8 +295,9 @@ function renderPlayers(players) {
     )).join("");
 }
 
-async function openMatchDetails(matchId) {
+async function openMatchDetails(matchId, seedMatch = null) {
     state.selectedMatchId = matchId;
+    state.selectedMatchSeed = seedMatch;
     ui.detailPlaceholder.classList.add("is-hidden");
     ui.detailShell.classList.remove("is-hidden");
     ui.detailMeta.textContent = `Match #${matchId}`;
@@ -273,7 +322,13 @@ async function openMatchDetails(matchId) {
             ui.detailContent.innerHTML = renderPlayers(detailsPayload.players);
         }
     } catch (_) {
-        ui.detailError.textContent = "No data available";
+        if (seedMatch) {
+            renderSummary(seedMatch);
+            ui.detailContent.innerHTML = `<div class="empty-state">Detailed ${state.detailTab} data is unavailable for featured fallback matches.</div>`;
+        }
+        ui.detailError.textContent = seedMatch
+            ? "Showing summary from fallback showcase data."
+            : "No data available";
         ui.detailError.classList.remove("is-hidden");
     } finally {
         ui.detailLoading.classList.add("is-hidden");
@@ -293,7 +348,7 @@ async function loadLive() {
     try {
         const payload = await apiGet("/live");
         const items = payload.items || [];
-        ui.panelMeta.textContent = `${items.length} live`;
+        ui.panelMeta.textContent = payload.source === "live" ? `${items.length} live right now` : `Showing ${payload.source} matches`;
         if (!items.length) {
             setEmpty("No live matches right now. Switch to Matches for upcoming kickoffs.", true);
             return;
@@ -319,7 +374,13 @@ async function loadMatches() {
     try {
         const payload = await apiGet("/matches");
         const items = payload.items || [];
-        ui.panelMeta.textContent = `${items.length} upcoming`;
+        if (payload.source === "today") {
+            ui.panelMeta.textContent = `${items.length} scheduled today`;
+        } else if (payload.source === "upcoming") {
+            ui.panelMeta.textContent = `${items.length} upcoming picks`;
+        } else {
+            ui.panelMeta.textContent = "Featured showcase";
+        }
         if (!items.length) {
             setEmpty("No upcoming matches are available right now.", true);
             return;
@@ -351,7 +412,7 @@ async function loadStandings() {
         const league = standingsPayload.league;
         state.selectedLeagueId = league?.id || state.selectedLeagueId || leagues[0]?.id || null;
         renderLeagueBar(leagues, state.selectedLeagueId);
-        ui.panelMeta.textContent = league?.name || "";
+        ui.panelMeta.textContent = standingsPayload.source === "api" ? (league?.name || "") : `${league?.name || ""} - featured table`;
 
         const items = standingsPayload.items || [];
         if (!items.length) {
@@ -382,10 +443,39 @@ async function loadStandings() {
     }
 }
 
+async function loadFavorites() {
+    hideLeagueBar();
+    ui.panelTitle.textContent = "Favorites";
+    ui.panelMeta.textContent = "";
+    setMetrics("Mini App", "Personal watchlist", "Open inside Telegram to sync your teams");
+    setError("");
+    setLoading(true, "Loading favorites...");
+    setEmpty("", false);
+    ui.cards.innerHTML = "";
+
+    try {
+        const query = state.telegramUserId ? `?user_id=${state.telegramUserId}` : "";
+        const payload = await apiGet(`/favorites${query}`);
+        const items = payload.items || [];
+        ui.panelMeta.textContent = payload.source === "api" ? `${items.length} favorite teams` : "Telegram profile required";
+        if (!items.length) {
+            setEmpty(payload.message || "Open Match Center inside Telegram to load favorites.", true);
+            return;
+        }
+        items.forEach((item) => ui.cards.appendChild(renderFavoriteCard(item)));
+    } catch (_) {
+        setError("Favorites are temporarily unavailable.");
+    } finally {
+        setLoading(false);
+    }
+}
+
 async function loadCurrentTab() {
     ui.heroStatus.textContent = telegramApp ? "Opened in Telegram" : "Browser preview";
     if (state.tab === "live") {
         await loadLive();
+    } else if (state.tab === "favorites") {
+        await loadFavorites();
     } else if (state.tab === "standings") {
         await loadStandings();
     } else {
