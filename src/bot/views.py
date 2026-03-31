@@ -186,6 +186,114 @@ def match_details_text(match: dict, timezone: str):
     )
 
 
+def match_events_text(match: dict, events: list[dict], timezone: str):
+    lines = [
+        "Match events",
+        "",
+        f"{match['home']} vs {match['away']}",
+        f"Kickoff: {format_datetime(match.get('date'), timezone)} ({timezone})",
+        "",
+    ]
+    if not events:
+        lines.append("No events available for this match.")
+        return "\n".join(lines)
+
+    for event in events[:10]:
+        minute = f"{event['minute']}'" if event.get("minute") is not None else "?"
+        if event.get("extra") is not None:
+            minute = f"{minute}+{event['extra']}"
+        detail = f" - {event['detail']}" if event.get("detail") else ""
+        assist = f" (assist: {event['assist']})" if event.get("assist") else ""
+        lines.append(f"{minute} {event['team']}")
+        lines.append(f"{event['type']}: {event['player']}{detail}{assist}")
+        if event.get("comments"):
+            lines.append(f"Note: {event['comments']}")
+        lines.append("")
+    return "\n".join(lines).strip()
+
+
+def match_statistics_text(match: dict, statistics: list[dict], timezone: str):
+    lines = [
+        "Match statistics",
+        "",
+        f"{match['home']} vs {match['away']}",
+        f"Kickoff: {format_datetime(match.get('date'), timezone)} ({timezone})",
+        "",
+    ]
+    if not statistics:
+        lines.append("No statistics available for this match.")
+        return "\n".join(lines)
+
+    for team_stats in statistics:
+        lines.append(team_stats["team"])
+        for entry in team_stats.get("entries", [])[:8]:
+            lines.append(f"- {entry['type']}: {entry['value']}")
+        lines.append("")
+    return "\n".join(lines).strip()
+
+
+def match_lineups_text(match: dict, lineups: list[dict], timezone: str):
+    lines = [
+        "Match lineups",
+        "",
+        f"{match['home']} vs {match['away']}",
+        f"Kickoff: {format_datetime(match.get('date'), timezone)} ({timezone})",
+        "",
+    ]
+    if not lineups:
+        lines.append("No lineups available for this match.")
+        return "\n".join(lines)
+
+    for lineup in lineups:
+        lines.append(f"{lineup['team']} | Formation: {lineup['formation']}")
+        lines.append(f"Coach: {lineup['coach']}")
+        lines.append("Starting XI:")
+        for player in lineup.get("start_xi", [])[:11]:
+            number = f"#{player['number']} " if player.get("number") is not None else ""
+            position = f" ({player['pos']})" if player.get("pos") else ""
+            lines.append(f"- {number}{player['name']}{position}")
+        if lineup.get("substitutes"):
+            lines.append("Bench:")
+            for player in lineup.get("substitutes", [])[:5]:
+                number = f"#{player['number']} " if player.get("number") is not None else ""
+                position = f" ({player['pos']})" if player.get("pos") else ""
+                lines.append(f"- {number}{player['name']}{position}")
+        lines.append("")
+    return "\n".join(lines).strip()
+
+
+def match_players_text(match: dict, players: list[dict], timezone: str):
+    lines = [
+        "Player stats",
+        "",
+        f"{match['home']} vs {match['away']}",
+        f"Kickoff: {format_datetime(match.get('date'), timezone)} ({timezone})",
+        "",
+    ]
+    if not players:
+        lines.append("No player statistics available for this match.")
+        return "\n".join(lines)
+
+    for player in players[:8]:
+        rating = player["rating"] or "N/A"
+        lines.append(f"{player['name']} | {player['team']}")
+        lines.append(
+            f"Pos: {player['position']} | Rating: {rating} | Min: {player.get('minutes') or 0}"
+        )
+        lines.append(
+            "Goals: "
+            f"{player['goals']} | Assists: {player['assists']} | Shots: {player['shots']}"
+        )
+        lines.append(
+            "Passes: "
+            f"{player['passes']} | Tackles: {player['tackles']} | Duels: {player['duels']}"
+        )
+        if player["yellow"] or player["red"]:
+            lines.append(f"Cards: Y {player['yellow']} / R {player['red']}")
+        lines.append("")
+    return "\n".join(lines).strip()
+
+
 def analysis_text(match: dict, analysis: str, timezone: str):
     league_line = match["league"]
     if match.get("country") and match["country"] != "Unknown country":

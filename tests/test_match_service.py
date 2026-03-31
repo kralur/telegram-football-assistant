@@ -114,6 +114,69 @@ class FakeApiClient:
             "goals": {"home": None, "away": None},
         }
 
+    async def get_fixture_events(self, match_id: int):
+        return [
+            {
+                "time": {"elapsed": 15, "extra": None},
+                "team": {"name": "Real Madrid"},
+                "player": {"name": "Vinicius Junior"},
+                "assist": {"name": "Bellingham"},
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "comments": None,
+            }
+        ]
+
+    async def get_fixture_statistics(self, match_id: int):
+        return [
+            {
+                "team": {"name": "Real Madrid"},
+                "statistics": [
+                    {"type": "Shots on Goal", "value": 6},
+                    {"type": "Ball Possession", "value": "58%"},
+                ],
+            }
+        ]
+
+    async def get_fixture_lineups(self, match_id: int):
+        return [
+            {
+                "team": {"name": "Real Madrid"},
+                "formation": "4-3-3",
+                "coach": {"name": "Carlo Ancelotti"},
+                "startXI": [
+                    {"player": {"name": "Courtois", "number": 1, "pos": "G"}},
+                    {"player": {"name": "Bellingham", "number": 5, "pos": "M"}},
+                ],
+                "substitutes": [
+                    {"player": {"name": "Modric", "number": 10, "pos": "M"}},
+                ],
+            }
+        ]
+
+    async def get_fixture_players(self, match_id: int):
+        return [
+            {
+                "team": {"name": "Real Madrid"},
+                "players": [
+                    {
+                        "player": {"name": "Bellingham"},
+                        "statistics": [
+                            {
+                                "games": {"position": "M", "rating": "8.2", "minutes": 90},
+                                "goals": {"total": 1, "assists": 0},
+                                "shots": {"total": 3},
+                                "passes": {"total": 48},
+                                "tackles": {"total": 2},
+                                "duels": {"total": 9},
+                                "cards": {"yellow": 1, "red": 0},
+                            }
+                        ],
+                    }
+                ],
+            }
+        ]
+
     async def search_team(self, query: str):
         self.team_search_calls += 1
         return [
@@ -238,6 +301,30 @@ class MatchServiceTests(unittest.IsolatedAsyncioTestCase):
         matches = await self.service.get_last_team_matches(team_id=77, limit=1)
 
         self.assertEqual(matches[0]["id"], 22)
+
+    async def test_get_match_events_normalizes_response(self):
+        events = await self.service.get_match_events(99)
+
+        self.assertEqual(events[0]["type"], "Goal")
+        self.assertEqual(events[0]["assist"], "Bellingham")
+
+    async def test_get_match_statistics_normalizes_response(self):
+        statistics = await self.service.get_match_statistics(99)
+
+        self.assertEqual(statistics[0]["team"], "Real Madrid")
+        self.assertEqual(statistics[0]["entries"][0]["type"], "Shots on Goal")
+
+    async def test_get_match_lineups_normalizes_response(self):
+        lineups = await self.service.get_match_lineups(99)
+
+        self.assertEqual(lineups[0]["formation"], "4-3-3")
+        self.assertEqual(lineups[0]["start_xi"][0]["name"], "Courtois")
+
+    async def test_get_match_players_normalizes_and_sorts_response(self):
+        players = await self.service.get_match_players(99)
+
+        self.assertEqual(players[0]["name"], "Bellingham")
+        self.assertEqual(players[0]["rating"], "8.2")
 
     def test_current_season_uses_start_year(self):
         self.assertEqual(self.service.get_current_season(datetime(2026, 3, 28, tzinfo=UTC)), 2025)

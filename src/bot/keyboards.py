@@ -165,12 +165,24 @@ def timezone_keyboard(current_timezone: str):
     return kb.as_markup()
 
 
-def match_detail_keyboard(match_id: int):
+def match_detail_keyboard(match_id: int, active: str = "summary"):
     kb = InlineKeyboardBuilder()
+    summary_title = "Summary *" if active == "summary" else "Summary"
+    events_title = "Events *" if active == "events" else "Events"
+    stats_title = "Stats *" if active == "statistics" else "Stats"
+    lineups_title = "Lineups *" if active == "lineups" else "Lineups"
+    players_title = "Players *" if active == "players" else "Players"
+    ai_title = "AI *" if active == "analysis" else "AI"
+
+    kb.button(text=summary_title, callback_data=f"match:open:{match_id}")
+    kb.button(text=events_title, callback_data=f"match:events:{match_id}")
+    kb.button(text=stats_title, callback_data=f"match:statistics:{match_id}")
+    kb.button(text=lineups_title, callback_data=f"match:lineups:{match_id}")
+    kb.button(text=players_title, callback_data=f"match:players:{match_id}")
     kb.button(text="Notify", callback_data=f"notify:match:{match_id}")
-    kb.button(text="AI analysis", callback_data=f"analysis:match:{match_id}")
+    kb.button(text=ai_title, callback_data=f"analysis:match:{match_id}")
     footer_navigation(kb)
-    kb.adjust(2, 2)
+    kb.adjust(3, 2, 2, 2)
     return kb.as_markup()
 
 

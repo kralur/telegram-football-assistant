@@ -28,6 +28,10 @@ from src.bot.views import (
     main_menu_text,
     match_card_text,
     match_details_text,
+    match_events_text,
+    match_lineups_text,
+    match_players_text,
+    match_statistics_text,
     matches_text,
     notification_added_text,
     notification_unavailable_text,
@@ -292,12 +296,64 @@ async def build_screen(user_id: int, screen: str, payload: dict):
 
     if screen == "match_details":
         match = payload["match"]
-        return match_details_text(match, timezone), match_detail_keyboard(match["id"]), payload
+        return (
+            match_details_text(match, timezone),
+            match_detail_keyboard(match["id"], active="summary"),
+            payload,
+        )
+
+    if screen == "match_events":
+        match = payload["match"]
+        events = payload.get("events")
+        if events is None:
+            events = await services["match_service"].get_match_events(match["id"])
+        return (
+            match_events_text(match, events, timezone),
+            match_detail_keyboard(match["id"], active="events"),
+            {"match": match, "events": events},
+        )
+
+    if screen == "match_statistics":
+        match = payload["match"]
+        statistics = payload.get("statistics")
+        if statistics is None:
+            statistics = await services["match_service"].get_match_statistics(match["id"])
+        return (
+            match_statistics_text(match, statistics, timezone),
+            match_detail_keyboard(match["id"], active="statistics"),
+            {"match": match, "statistics": statistics},
+        )
+
+    if screen == "match_lineups":
+        match = payload["match"]
+        lineups = payload.get("lineups")
+        if lineups is None:
+            lineups = await services["match_service"].get_match_lineups(match["id"])
+        return (
+            match_lineups_text(match, lineups, timezone),
+            match_detail_keyboard(match["id"], active="lineups"),
+            {"match": match, "lineups": lineups},
+        )
+
+    if screen == "match_players":
+        match = payload["match"]
+        players = payload.get("players")
+        if players is None:
+            players = await services["match_service"].get_match_players(match["id"])
+        return (
+            match_players_text(match, players, timezone),
+            match_detail_keyboard(match["id"], active="players"),
+            {"match": match, "players": players},
+        )
 
     if screen == "analysis":
         match = payload["match"]
         analysis = payload["analysis"]
-        return analysis_text(match, analysis, timezone), match_detail_keyboard(match["id"]), payload
+        return (
+            analysis_text(match, analysis, timezone),
+            match_detail_keyboard(match["id"], active="analysis"),
+            payload,
+        )
 
     return main_menu_text(timezone), main_menu_keyboard(), {}
 
@@ -440,9 +496,39 @@ async def callback_router(call: CallbackQuery):
         match = await services["match_service"].get_match(match_id)
         if match:
             await render_callback(call, "match_details", {"match": match})
+    elif action.startswith("match:events:"):
+        match_id = int(action.split(":")[-1])
+        match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
+        if match is None:
+            match = await services["match_service"].get_match(match_id)
+        if match:
+            await render_callback(call, "match_events", {"match": match})
+    elif action.startswith("match:statistics:"):
+        match_id = int(action.split(":")[-1])
+        match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
+        if match is None:
+            match = await services["match_service"].get_match(match_id)
+        if match:
+            await render_callback(call, "match_statistics", {"match": match})
+    elif action.startswith("match:lineups:"):
+        match_id = int(action.split(":")[-1])
+        match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
+        if match is None:
+            match = await services["match_service"].get_match(match_id)
+        if match:
+            await render_callback(call, "match_lineups", {"match": match})
+    elif action.startswith("match:players:"):
+        match_id = int(action.split(":")[-1])
+        match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
+        if match is None:
+            match = await services["match_service"].get_match(match_id)
+        if match:
+            await render_callback(call, "match_players", {"match": match})
     elif action.startswith("analysis:match:"):
         match_id = int(action.split(":")[-1])
-        match = await services["match_service"].get_match(match_id)
+        match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
+        if match is None:
+            match = await services["match_service"].get_match(match_id)
         if match:
             analysis = await services["analysis_service"].analyze(match)
             await render_callback(call, "analysis", {"match": match, "analysis": analysis})

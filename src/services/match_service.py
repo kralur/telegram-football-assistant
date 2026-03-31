@@ -119,6 +119,38 @@ class MatchService:
             self.cache.set(cache_key, match, ttl=CACHE_TTL_MATCHES)
         return match
 
+    async def get_match_events(self, match_id: int):
+        return await self._get_or_cache(
+            f"match:events:{match_id}",
+            lambda: self.api_client.get_fixture_events(match_id),
+            self._normalize_events,
+            60,
+        )
+
+    async def get_match_statistics(self, match_id: int):
+        return await self._get_or_cache(
+            f"match:statistics:{match_id}",
+            lambda: self.api_client.get_fixture_statistics(match_id),
+            self._normalize_statistics,
+            60,
+        )
+
+    async def get_match_lineups(self, match_id: int):
+        return await self._get_or_cache(
+            f"match:lineups:{match_id}",
+            lambda: self.api_client.get_fixture_lineups(match_id),
+            self._normalize_lineups,
+            300,
+        )
+
+    async def get_match_players(self, match_id: int):
+        return await self._get_or_cache(
+            f"match:players:{match_id}",
+            lambda: self.api_client.get_fixture_players(match_id),
+            self._normalize_players,
+            60,
+        )
+
     async def search_team(self, query: str):
         return await self.api_client.search_team(query)
 
@@ -308,6 +340,111 @@ class MatchService:
                 }
             )
         return scorers
+
+    @staticmethod
+    def _normalize_events(rows: list[dict]):
+        events = []
+        for row in rows:
+            time_info = row.get("time", {})
+            minute = time_info.get("elapsed")
+            extra = time_info.get("extra")
+            events.append(
+                {
+                    "team": row.get("team", {}).get("name", "Unknown team"),
+                    "player": row.get("player", {}).get("name") or "Unknown player",
+                    "assist": row.get("assist", {}).get("name"),
+                    "type": row.get("type", "Event"),
+                    "detail": row.get("detail", ""),
+                    "comments": row.get("comments"),
+                    "minute": minute,
+                    "extra": extra,
+                }
+            )
+        return events
+
+    @staticmethod
+    def _normalize_statistics(rows: list[dict]):
+        statistics = []
+        for row in rows:
+            team_name = row.get("team", {}).get("name", "Unknown team")
+            entries = []
+            for item in row.get("statistics", []):
+                value = item.get("value")
+                if value in (None, ""):
+                    continue
+                entries.append({"type": item.get("type", "Stat"), "value": value})
+            statistics.append({"team": team_name, "entries": entries})
+        return statistics
+
+    @staticmethod
+    def _normalize_lineups(rows: list[dict]):
+        lineups = []
+        for row in rows:
+            lineups.append(
+                {
+                    "team": row.get("team", {}).get("name", "Unknown team"),
+                    "formation": row.get("formation") or "Unknown",
+                    "coach": row.get("coach", {}).get("name") or "Unknown coach",
+                    "start_xi": [
+                        {
+                            "name": player.get("player", {}).get("name", "Unknown player"),
+                            "number": player.get("player", {}).get("number"),
+                            "pos": player.get("player", {}).get("pos"),
+                        }
+                        for player in row.get("startXI", [])
+                    ],
+                    "substitutes": [
+                        {
+                            "name": player.get("player", {}).get("name", "Unknown player"),
+                            "number": player.get("player", {}).get("number"),
+                            "pos": player.get("player", {}).get("pos"),
+                        }
+                        for player in row.get("substitutes", [])
+                    ],
+                }
+            )
+        return lineups
+
+    @staticmethod
+    def _normalize_players(rows: list[dict]):
+        players = []
+        for row in rows:
+            team_name = row.get("team", {}).get("name", "Unknown team")
+            for player in row.get("players", []):
+                stats = (player.get("statistics") or [{}])[0]
+                rating = stats.get("games", {}).get("rating")
+                try:
+                    rating_value = float(rating) if rating not in (None, "") else None
+                except (TypeError, ValueError):
+                    rating_value = None
+                players.append(
+                    {
+                        "team": team_name,
+                        "name": player.get("player", {}).get("name", "Unknown player"),
+                        "position": stats.get("games", {}).get("position") or "N/A",
+                        "minutes": stats.get("games", {}).get("minutes"),
+                        "rating": rating,
+                        "rating_value": rating_value,
+                        "goals": stats.get("goals", {}).get("total") or 0,
+                        "assists": stats.get("goals", {}).get("assists") or 0,
+                        "shots": stats.get("shots", {}).get("total") or 0,
+                        "passes": stats.get("passes", {}).get("total") or 0,
+                        "tackles": stats.get("tackles", {}).get("total") or 0,
+                        "duels": stats.get("duels", {}).get("total") or 0,
+                        "yellow": stats.get("cards", {}).get("yellow") or 0,
+                        "red": stats.get("cards", {}).get("red") or 0,
+                    }
+                )
+
+        return sorted(
+            players,
+            key=lambda player: (
+                player.get("rating_value") is not None,
+                player.get("rating_value") or 0,
+                player.get("minutes") or 0,
+            ),
+            reverse=True,
+        )
 
     @staticmethod
     def _format_score(goals: dict):

@@ -1,22 +1,22 @@
-2026-03-31 11:25:18,653 | INFO | football_bot | Starting Football Assistant...
-2026-03-31 11:25:18,657 | INFO | football_bot | Database initialized
-2026-03-31 11:25:19,431 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
-2026-03-31 11:25:19,434 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
-2026-03-31 11:25:19,436 | INFO | apscheduler.scheduler | Added job "SchedulerService.sync_notifications" to job store "default"
-2026-03-31 11:25:19,436 | INFO | apscheduler.scheduler | Added job "SchedulerService.daily_summary" to job store "default"
-2026-03-31 11:25:19,437 | INFO | apscheduler.scheduler | Scheduler started
-2026-03-31 11:25:19,438 | INFO | football_bot | Scheduler started
-2026-03-31 11:25:19,438 | INFO | football_bot | Bot is running...
-2026-03-31 11:25:19,438 | INFO | aiogram.dispatcher | Start polling
-2026-03-31 11:25:19,758 | INFO | aiogram.dispatcher | Run polling for bot @football_assistant_kralur_bot id=8278692462 - 'Football Assistant'
-2026-03-31 11:25:49,434 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:26:19 +05)" (scheduled at 2026-03-31 11:25:49.430989+05:00)
-2026-03-31 11:25:49,755 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:25:49,760 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
-2026-03-31 11:25:49,879 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:25:49,883 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
-2026-03-31 11:25:49,883 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
+2026-03-31 11:37:27,248 | INFO | football_bot | Starting Football Assistant...
+2026-03-31 11:37:27,252 | INFO | football_bot | Database initialized
+2026-03-31 11:37:27,806 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-31 11:37:27,809 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-31 11:37:27,810 | INFO | apscheduler.scheduler | Added job "SchedulerService.sync_notifications" to job store "default"
+2026-03-31 11:37:27,811 | INFO | apscheduler.scheduler | Added job "SchedulerService.daily_summary" to job store "default"
+2026-03-31 11:37:27,811 | INFO | apscheduler.scheduler | Scheduler started
+2026-03-31 11:37:27,811 | INFO | football_bot | Scheduler started
+2026-03-31 11:37:27,811 | INFO | football_bot | Bot is running...
+2026-03-31 11:37:27,811 | INFO | aiogram.dispatcher | Start polling
+2026-03-31 11:37:28,144 | INFO | aiogram.dispatcher | Run polling for bot @football_assistant_kralur_bot id=8278692462 - 'Football Assistant'
+2026-03-31 11:37:57,818 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:38:27 +05)" (scheduled at 2026-03-31 11:37:57.806868+05:00)
+2026-03-31 11:37:58,260 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:37:58,266 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:37:58,389 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:37:58,390 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:37:58,391 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
 Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 164, in get_team_matches
     raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
@@ -39,10 +39,10 @@ Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
     matches = await self.match_service.get_team_matches(team_id, limit=1)
               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 169, in get_team_matches
     matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 261, in _fallback_team_matches
     raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
@@ -56,15 +56,15 @@ Traceback (most recent call last):
     ...<2 lines>...
     )
 src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-2026-03-31 11:25:49,888 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:26:19 +05)" executed successfully
-2026-03-31 11:26:19,442 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:26:49 +05)" (scheduled at 2026-03-31 11:26:19.430989+05:00)
-2026-03-31 11:26:19,777 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:26:19,779 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
-2026-03-31 11:26:19,904 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:26:19,907 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
-2026-03-31 11:26:19,908 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
+2026-03-31 11:37:58,395 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:38:27 +05)" executed successfully
+2026-03-31 11:38:27,822 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:38:57 +05)" (scheduled at 2026-03-31 11:38:27.806868+05:00)
+2026-03-31 11:38:28,168 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:38:28,172 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:38:28,294 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:38:28,299 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:38:28,299 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
 Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 164, in get_team_matches
     raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
@@ -87,10 +87,10 @@ Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
     matches = await self.match_service.get_team_matches(team_id, limit=1)
               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 169, in get_team_matches
     matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 261, in _fallback_team_matches
     raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
@@ -104,244 +104,4 @@ Traceback (most recent call last):
     ...<2 lines>...
     )
 src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-2026-03-31 11:26:19,911 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:26:49 +05)" executed successfully
-2026-03-31 11:26:49,443 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:27:19 +05)" (scheduled at 2026-03-31 11:26:49.430989+05:00)
-2026-03-31 11:26:51,493 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:26:51,498 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
-2026-03-31 11:26:51,626 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:26:51,631 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
-2026-03-31 11:26:51,632 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
-    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
-    return await self._get(
-           ^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
-    matches = await self.match_service.get_team_matches(team_id, limit=1)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
-    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
-    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
-    return await self._get(
-           ^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-2026-03-31 11:26:51,635 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:27:19 +05)" executed successfully
-2026-03-31 11:27:19,439 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:27:49 +05)" (scheduled at 2026-03-31 11:27:19.430989+05:00)
-2026-03-31 11:27:19,753 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:27:19,757 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
-2026-03-31 11:27:19,871 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:27:19,875 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
-2026-03-31 11:27:19,876 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
-    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
-    return await self._get(
-           ^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
-    matches = await self.match_service.get_team_matches(team_id, limit=1)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
-    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
-    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
-    return await self._get(
-           ^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-2026-03-31 11:27:19,878 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:27:49 +05)" executed successfully
-2026-03-31 11:27:49,443 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:28:19 +05)" (scheduled at 2026-03-31 11:27:49.430989+05:00)
-2026-03-31 11:27:49,765 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:27:49,770 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
-2026-03-31 11:27:49,892 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:27:49,897 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
-2026-03-31 11:27:49,897 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
-    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
-    return await self._get(
-           ^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
-    matches = await self.match_service.get_team_matches(team_id, limit=1)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
-    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
-    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
-    return await self._get(
-           ^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-2026-03-31 11:27:49,900 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:28:19 +05)" executed successfully
-2026-03-31 11:28:19,443 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:28:49 +05)" (scheduled at 2026-03-31 11:28:19.430989+05:00)
-2026-03-31 11:28:19,765 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:28:19,770 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
-2026-03-31 11:28:19,890 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:28:19,893 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
-2026-03-31 11:28:19,893 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
-    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
-    return await self._get(
-           ^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
-    matches = await self.match_service.get_team_matches(team_id, limit=1)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
-    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
-    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
-    return await self._get(
-           ^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-2026-03-31 11:28:19,896 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:28:49 +05)" executed successfully
-2026-03-31 11:28:49,441 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:29:19 +05)" (scheduled at 2026-03-31 11:28:49.430989+05:00)
-2026-03-31 11:28:49,779 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:28:49,782 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
-2026-03-31 11:28:49,908 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:28:49,911 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
-2026-03-31 11:28:49,911 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 132, in get_team_matches
-    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
-    return await self._get(
-           ^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
-    await self.notify_service.sync_favorites_for_user(user_id)
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
-    matches = await self.match_service.get_team_matches(team_id, limit=1)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 137, in get_team_matches
-    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 229, in _fallback_team_matches
-    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
-    return await self._get(
-           ^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-    )
-    ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
-    raise FootballApiError(
-    ...<2 lines>...
-    )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-2026-03-31 11:28:49,912 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:29:19 +05)" executed successfully
+2026-03-31 11:38:28,302 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:38:57 +05)" executed successfully

@@ -1,8 +1,17 @@
 import unittest
 
-from src.bot.keyboards import match_card_keyboard, today_filter_keyboard
+from src.bot.keyboards import match_card_keyboard, match_detail_keyboard, today_filter_keyboard
 from src.bot.pagination import paginate
-from src.bot.views import favorites_text, format_datetime, match_card_text, matches_text
+from src.bot.views import (
+    favorites_text,
+    format_datetime,
+    match_card_text,
+    match_events_text,
+    match_lineups_text,
+    match_players_text,
+    match_statistics_text,
+    matches_text,
+)
 
 
 class BotUiHelperTests(unittest.TestCase):
@@ -109,6 +118,89 @@ class BotUiHelperTests(unittest.TestCase):
         rows = markup.inline_keyboard
         self.assertEqual(rows[0][0].text, "All leagues")
         self.assertEqual(rows[1][0].text, "Premier League *")
+
+    def test_match_detail_keyboard_marks_active_section(self):
+        markup = match_detail_keyboard(match_id=55, active="events")
+
+        rows = markup.inline_keyboard
+        self.assertEqual([button.text for button in rows[0]], ["Summary", "Events *", "Stats"])
+        self.assertEqual([button.text for button in rows[1]], ["Lineups", "Players"])
+
+    def test_match_events_text_formats_timeline(self):
+        text = match_events_text(
+            {"home": "Real Madrid", "away": "Barcelona", "date": "2026-03-31T18:00:00+00:00"},
+            [
+                {
+                    "minute": 15,
+                    "extra": None,
+                    "team": "Real Madrid",
+                    "player": "Vinicius Junior",
+                    "type": "Goal",
+                    "detail": "Normal Goal",
+                    "assist": "Bellingham",
+                    "comments": None,
+                }
+            ],
+            "Asia/Tashkent",
+        )
+
+        self.assertIn("15' Real Madrid", text)
+        self.assertIn("Goal: Vinicius Junior - Normal Goal", text)
+
+    def test_match_statistics_text_formats_team_blocks(self):
+        text = match_statistics_text(
+            {"home": "Real Madrid", "away": "Barcelona", "date": "2026-03-31T18:00:00+00:00"},
+            [{"team": "Real Madrid", "entries": [{"type": "Shots on Goal", "value": 6}]}],
+            "Asia/Tashkent",
+        )
+
+        self.assertIn("Real Madrid", text)
+        self.assertIn("- Shots on Goal: 6", text)
+
+    def test_match_lineups_text_formats_sections(self):
+        text = match_lineups_text(
+            {"home": "Real Madrid", "away": "Barcelona", "date": "2026-03-31T18:00:00+00:00"},
+            [
+                {
+                    "team": "Real Madrid",
+                    "formation": "4-3-3",
+                    "coach": "Carlo Ancelotti",
+                    "start_xi": [{"name": "Courtois", "number": 1, "pos": "G"}],
+                    "substitutes": [{"name": "Modric", "number": 10, "pos": "M"}],
+                }
+            ],
+            "Asia/Tashkent",
+        )
+
+        self.assertIn("Formation: 4-3-3", text)
+        self.assertIn("Starting XI:", text)
+        self.assertIn("- #1 Courtois (G)", text)
+
+    def test_match_players_text_formats_top_players(self):
+        text = match_players_text(
+            {"home": "Real Madrid", "away": "Barcelona", "date": "2026-03-31T18:00:00+00:00"},
+            [
+                {
+                    "team": "Real Madrid",
+                    "name": "Bellingham",
+                    "position": "M",
+                    "minutes": 90,
+                    "rating": "8.2",
+                    "goals": 1,
+                    "assists": 0,
+                    "shots": 3,
+                    "passes": 48,
+                    "tackles": 2,
+                    "duels": 9,
+                    "yellow": 1,
+                    "red": 0,
+                }
+            ],
+            "Asia/Tashkent",
+        )
+
+        self.assertIn("Bellingham | Real Madrid", text)
+        self.assertIn("Rating: 8.2", text)
 
 
 if __name__ == "__main__":

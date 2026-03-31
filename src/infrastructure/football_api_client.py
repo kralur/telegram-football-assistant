@@ -129,5 +129,17 @@ class FootballApiClient:
         response = await self._get("/fixtures", {"id": match_id, "timezone": "UTC"})
         return response[0] if response else None
 
+    async def get_fixture_events(self, match_id: int):
+        return await self._get("/fixtures/events", {"fixture": match_id})
+
+    async def get_fixture_statistics(self, match_id: int):
+        return await self._get("/fixtures/statistics", {"fixture": match_id})
+
+    async def get_fixture_lineups(self, match_id: int):
+        return await self._get("/fixtures/lineups", {"fixture": match_id})
+
+    async def get_fixture_players(self, match_id: int):
+        return await self._get("/fixtures/players", {"fixture": match_id})
+
     async def aclose(self):
         await self.client.aclose()
