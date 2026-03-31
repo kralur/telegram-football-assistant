@@ -18,8 +18,6 @@ def main_menu_keyboard():
     kb = InlineKeyboardBuilder()
     kb.button(text="Today", callback_data="nav:today")
     kb.button(text="Live", callback_data="nav:live")
-    kb.button(text="Standings", callback_data="nav:standings_leagues")
-    kb.button(text="Scorers", callback_data="nav:scorers_leagues")
     kb.button(text="Favorites", callback_data="nav:favorites")
     kb.button(text="Search", callback_data="nav:search")
     kb.button(text="Timezone", callback_data="nav:timezone")

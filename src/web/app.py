@@ -32,7 +32,16 @@ def create_web_app(services: ServiceContainer | None = None):
         app.state.services = state["services"]
         app.state.services.logger.info("Mini app backend ready")
 
-        if TELEGRAM_BOT_TOKEN:
+        if TELEGRAM_BOT_TOKEN and all(
+            hasattr(app.state.services, attr)
+            for attr in (
+                "notification_repository",
+                "reminder_log_repository",
+                "favorites_service",
+                "users_repository",
+                "search_service",
+            )
+        ):
             state["bot_runtime"] = BotRuntime(app.state.services)
             await state["bot_runtime"].start()
             app.state.bot_runtime = state["bot_runtime"]

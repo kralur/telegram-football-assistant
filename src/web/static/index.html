@@ -13,15 +13,30 @@
                 <p class="eyebrow">Telegram Mini App</p>
                 <h1>Football Match Center</h1>
                 <p class="hero-copy">
-                    Live action, upcoming fixtures, and standings in one clean screen.
+                    Deep football browsing lives here: upcoming fixtures, live updates, standings, and detailed match breakdowns.
                 </p>
             </div>
             <span class="hero-status" id="hero-status">Inside Telegram</span>
         </header>
 
+        <section class="metrics">
+            <article class="metric-card">
+                <span class="metric-label">Mode</span>
+                <strong id="metric-mode">Mini App</strong>
+            </article>
+            <article class="metric-card">
+                <span class="metric-label">Focus</span>
+                <strong id="metric-focus">Upcoming</strong>
+            </article>
+            <article class="metric-card">
+                <span class="metric-label">Tip</span>
+                <strong id="metric-tip">Tap a match card</strong>
+            </article>
+        </section>
+
         <nav class="tabs" aria-label="Mini app sections">
-            <button class="tab-button is-active" data-tab="live">Live</button>
-            <button class="tab-button" data-tab="matches">Matches</button>
+            <button class="tab-button is-active" data-tab="matches">Matches</button>
+            <button class="tab-button" data-tab="live">Live</button>
             <button class="tab-button" data-tab="standings">Standings</button>
         </nav>
 
@@ -33,7 +48,7 @@
         <main class="content-grid">
             <section class="panel">
                 <div class="panel-header">
-                    <h2 id="panel-title">Live Matches</h2>
+                    <h2 id="panel-title">Upcoming Matches</h2>
                     <span class="panel-meta" id="panel-meta"></span>
                 </div>
                 <div class="cards" id="cards"></div>

@@ -120,6 +120,9 @@ class BotUiHelperTests(unittest.TestCase):
         first_row = markup.inline_keyboard[0]
         self.assertEqual(first_row[0].text, "⚽ Open Match Center")
         self.assertIsNotNone(first_row[0].web_app)
+        labels = [button.text for row in markup.inline_keyboard[1:] for button in row]
+        self.assertNotIn("Standings", labels)
+        self.assertNotIn("Scorers", labels)
 
     def test_today_filter_keyboard_marks_selected_league(self):
         markup = today_filter_keyboard(

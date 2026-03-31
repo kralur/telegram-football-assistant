@@ -1,14 +1,12 @@
 :root {
     color-scheme: dark;
     --bg: #07111f;
-    --bg-soft: #0f1b2d;
     --surface: #101a2a;
     --surface-strong: #16233a;
     --surface-border: rgba(255, 255, 255, 0.08);
     --text: #f3f7fb;
     --muted: #9dafc6;
     --accent: #38d39f;
-    --accent-strong: #1ebd88;
     --warn: #ff835c;
     --shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
 }
@@ -41,7 +39,8 @@ button {
 .hero,
 .panel,
 .notice,
-.loading {
+.loading,
+.metric-card {
     border: 1px solid var(--surface-border);
     box-shadow: var(--shadow);
 }
@@ -85,12 +84,33 @@ button {
     font-weight: 700;
 }
 
+.metrics,
 .tabs,
 .league-bar,
 .detail-tabs {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+}
+
+.metrics {
+    margin: 14px 0 4px;
+}
+
+.metric-card {
+    min-width: 150px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.metric-label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
 }
 
 .tabs {
@@ -202,8 +222,7 @@ button {
 }
 
 .match-league,
-.match-time,
-.muted {
+.match-time {
     margin: 0;
     color: var(--muted);
 }
@@ -308,6 +327,11 @@ button {
     .panel {
         padding: 16px;
         border-radius: 22px;
+    }
+
+    .metrics {
+        display: grid;
+        grid-template-columns: 1fr;
     }
 
     .tabs {

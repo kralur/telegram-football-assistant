@@ -1,5 +1,5 @@
 const state = {
-    tab: "live",
+    tab: "matches",
     selectedLeagueId: null,
     selectedMatchId: null,
     detailTab: "events",
@@ -7,6 +7,9 @@ const state = {
 
 const ui = {
     heroStatus: document.getElementById("hero-status"),
+    metricMode: document.getElementById("metric-mode"),
+    metricFocus: document.getElementById("metric-focus"),
+    metricTip: document.getElementById("metric-tip"),
     tabs: Array.from(document.querySelectorAll(".tab-button")),
     leagueBar: document.getElementById("league-bar"),
     panelTitle: document.getElementById("panel-title"),
@@ -80,6 +83,12 @@ function setEmpty(message = "No data available", visible = false) {
     ui.emptyState.classList.toggle("is-hidden", !visible);
 }
 
+function setMetrics(mode, focus, tip) {
+    ui.metricMode.textContent = mode;
+    ui.metricFocus.textContent = focus;
+    ui.metricTip.textContent = tip;
+}
+
 function formatKickoff(value) {
     if (!value) {
         return "Kickoff TBD";
@@ -112,7 +121,7 @@ function renderMatchCard(match, accentLabel = "Open details") {
         <div class="match-header">
             <div>
                 <h3 class="match-title">${match.home} vs ${match.away}</h3>
-                <p class="match-league">${match.country} • ${match.league}</p>
+                <p class="match-league">${match.country} - ${match.league}</p>
             </div>
             <span class="${badgeClass(match)}">${badgeLabel(match)}</span>
         </div>
@@ -120,7 +129,7 @@ function renderMatchCard(match, accentLabel = "Open details") {
         <p class="match-time">${formatKickoff(match.date)}</p>
         <div class="card-actions">
             <button class="primary">${accentLabel}</button>
-            <button data-copy-id="${match.id}">Copy ID</button>
+            <button>Copy ID</button>
         </div>
     `;
 
@@ -159,7 +168,7 @@ function renderSummary(match) {
     ui.summaryCard.innerHTML = `
         <h3 class="summary-title">${match.home} vs ${match.away}</h3>
         <div class="summary-grid">
-            <div><strong>League:</strong> ${match.country} • ${match.league}</div>
+            <div><strong>League:</strong> ${match.country} - ${match.league}</div>
             <div><strong>Score:</strong> ${match.score}</div>
             <div><strong>Status:</strong> ${badgeLabel(match)}</div>
             <div><strong>Kickoff:</strong> ${formatKickoff(match.date)}</div>
@@ -184,7 +193,7 @@ function renderEvents(events) {
     }
 
     return events.slice(0, 12).map((event) => renderDetailBlock(
-        `${event.minute ?? "-"}' • ${event.team}`,
+        `${event.minute ?? "-"}' - ${event.team}`,
         `
             <div class="detail-row"><span>${event.type}</span><strong>${event.detail || "Event"}</strong></div>
             <div class="detail-row"><span>Player</span><strong>${event.player}</strong></div>
@@ -212,7 +221,7 @@ function renderLineups(lineups) {
     }
 
     return lineups.map((lineup) => renderDetailBlock(
-        `${lineup.team} • ${lineup.formation}`,
+        `${lineup.team} - ${lineup.formation}`,
         `
             <div class="detail-row"><span>Coach</span><strong>${lineup.coach}</strong></div>
             ${lineup.start_xi.slice(0, 11).map((player) => `
@@ -228,7 +237,7 @@ function renderPlayers(players) {
     }
 
     return players.slice(0, 12).map((player) => renderDetailBlock(
-        `${player.name} • ${player.team}`,
+        `${player.name} - ${player.team}`,
         `
             <div class="detail-row"><span>Position</span><strong>${player.position}</strong></div>
             <div class="detail-row"><span>Rating</span><strong>${player.rating || "N/A"}</strong></div>
@@ -263,7 +272,7 @@ async function openMatchDetails(matchId) {
         } else {
             ui.detailContent.innerHTML = renderPlayers(detailsPayload.players);
         }
-    } catch (error) {
+    } catch (_) {
         ui.detailError.textContent = "No data available";
         ui.detailError.classList.remove("is-hidden");
     } finally {
@@ -275,6 +284,7 @@ async function loadLive() {
     hideLeagueBar();
     ui.panelTitle.textContent = "Live Matches";
     ui.panelMeta.textContent = "";
+    setMetrics("Mini App", "Live window", "Use this tab during ongoing games");
     setError("");
     setLoading(true, "Loading live matches...");
     setEmpty("", false);
@@ -285,12 +295,12 @@ async function loadLive() {
         const items = payload.items || [];
         ui.panelMeta.textContent = `${items.length} live`;
         if (!items.length) {
-            setEmpty("No data available", true);
+            setEmpty("No live matches right now. Switch to Matches for upcoming kickoffs.", true);
             return;
         }
         items.forEach((match) => ui.cards.appendChild(renderMatchCard(match)));
     } catch (_) {
-        setError("No data available");
+        setError("Football data is temporarily unavailable.");
     } finally {
         setLoading(false);
     }
@@ -300,6 +310,7 @@ async function loadMatches() {
     hideLeagueBar();
     ui.panelTitle.textContent = "Upcoming Matches";
     ui.panelMeta.textContent = "";
+    setMetrics("Mini App", "Best upcoming picks", "Tap a match to open full detail view");
     setError("");
     setLoading(true, "Loading upcoming matches...");
     setEmpty("", false);
@@ -310,12 +321,12 @@ async function loadMatches() {
         const items = payload.items || [];
         ui.panelMeta.textContent = `${items.length} upcoming`;
         if (!items.length) {
-            setEmpty("No data available", true);
+            setEmpty("No upcoming matches are available right now.", true);
             return;
         }
         items.forEach((match) => ui.cards.appendChild(renderMatchCard(match, "Open summary")));
     } catch (_) {
-        setError("No data available");
+        setError("Football data is temporarily unavailable.");
     } finally {
         setLoading(false);
     }
@@ -324,6 +335,7 @@ async function loadMatches() {
 async function loadStandings() {
     ui.panelTitle.textContent = "Standings";
     ui.panelMeta.textContent = "";
+    setMetrics("Mini App", "League tables", "Choose a league chip to switch the table");
     setError("");
     setLoading(true, "Loading standings...");
     setEmpty("", false);
@@ -343,7 +355,7 @@ async function loadStandings() {
 
         const items = standingsPayload.items || [];
         if (!items.length) {
-            setEmpty("No data available", true);
+            setEmpty("No standings are available for this league right now.", true);
             return;
         }
 
@@ -363,7 +375,7 @@ async function loadStandings() {
             ui.cards.appendChild(card);
         });
     } catch (_) {
-        setError("No data available");
+        setError("Football data is temporarily unavailable.");
         hideLeagueBar();
     } finally {
         setLoading(false);
@@ -374,10 +386,10 @@ async function loadCurrentTab() {
     ui.heroStatus.textContent = telegramApp ? "Opened in Telegram" : "Browser preview";
     if (state.tab === "live") {
         await loadLive();
-    } else if (state.tab === "matches") {
-        await loadMatches();
-    } else {
+    } else if (state.tab === "standings") {
         await loadStandings();
+    } else {
+        await loadMatches();
     }
 }
 
