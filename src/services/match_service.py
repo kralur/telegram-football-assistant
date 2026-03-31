@@ -1,5 +1,5 @@
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 import logging
 
 from src.config.settings import (
@@ -80,12 +80,22 @@ class MatchService:
         )
 
     async def get_upcoming_matches(self, limit: int = 10):
-        return await self._get_or_cache(
-            f"matches:upcoming:{limit}",
-            lambda: self.api_client.get_upcoming_fixtures(limit=limit),
-            self._normalize_fixtures,
-            CACHE_TTL_MATCHES,
-        )
+        cache_key = f"matches:upcoming:{limit}"
+        cached = self.cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        try:
+            matches = self._normalize_fixtures(
+                await self.api_client.get_upcoming_fixtures(limit=limit)
+            )
+        except FootballApiError as exc:
+            if "Next parameter" not in exc.details:
+                raise
+            matches = await self._fallback_upcoming_matches(limit=limit)
+
+        self.cache.set(cache_key, matches, ttl=CACHE_TTL_MATCHES)
+        return matches
 
     async def get_standings(self, league_query: str | None = None):
         league = self.resolve_league(league_query)
@@ -278,6 +288,27 @@ class MatchService:
             filtered.sort(key=lambda match: match.get("date") or "", reverse=True)
 
         return filtered[:limit]
+
+    async def _fallback_upcoming_matches(self, limit: int):
+        today = datetime.now(UTC).date()
+        dates_to_try = [
+            today,
+            today + timedelta(days=1),
+        ]
+        collected = []
+        now = datetime.now(UTC)
+
+        for date_value in dates_to_try:
+            raw_matches = await self.api_client.get_fixtures_by_date(date_value.strftime("%Y-%m-%d"))
+            collected.extend(self._normalize_fixtures(raw_matches))
+
+        upcoming = [
+            match
+            for match in collected
+            if match.get("date") and self._parse_match_datetime(match["date"]) >= now
+        ]
+        upcoming.sort(key=lambda match: match.get("date") or "")
+        return upcoming[:limit]
 
     def _normalize_fixtures(self, fixtures: list[dict]):
         return [self._normalize_fixture(fixture) for fixture in fixtures if fixture]

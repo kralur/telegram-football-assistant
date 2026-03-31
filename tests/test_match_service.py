@@ -61,7 +61,27 @@ class FakeApiClient:
         return []
 
     async def get_upcoming_fixtures(self, limit: int = 10):
-        return []
+        raise FootballApiError(
+            "Football data provider returned an error. Please try again later.",
+            details="plan: Free plans do not have access to the Next parameter.",
+        )
+
+    async def get_fixtures_by_date(self, date: str):
+        return [
+            {
+                "fixture": {
+                    "id": 31,
+                    "date": "2099-03-28T20:00:00+00:00",
+                    "status": {"short": "NS", "long": "Not Started"},
+                },
+                "teams": {
+                    "home": {"name": "Real Madrid"},
+                    "away": {"name": "Barcelona"},
+                },
+                "league": {"id": 140, "name": "La Liga"},
+                "goals": {"home": None, "away": None},
+            }
+        ]
 
     async def get_standings(self, league_id: int, season: int):
         self.standings_calls.append(season)
@@ -296,6 +316,11 @@ class MatchServiceTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(self.api.next_calls, 1)
         self.assertEqual(matches[0]["id"], 21)
+
+    async def test_get_upcoming_matches_falls_back_when_next_is_not_available(self):
+        matches = await self.service.get_upcoming_matches(limit=1)
+
+        self.assertEqual(matches[0]["id"], 31)
 
     async def test_get_last_team_matches_falls_back_when_last_is_not_available(self):
         matches = await self.service.get_last_team_matches(team_id=77, limit=1)

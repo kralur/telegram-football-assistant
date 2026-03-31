@@ -1,6 +1,11 @@
 import unittest
 
-from src.bot.keyboards import match_card_keyboard, match_detail_keyboard, today_filter_keyboard
+from src.bot.keyboards import (
+    main_menu_keyboard,
+    match_card_keyboard,
+    match_detail_keyboard,
+    today_filter_keyboard,
+)
 from src.bot.pagination import paginate
 from src.bot.views import (
     favorites_text,
@@ -108,6 +113,13 @@ class BotUiHelperTests(unittest.TestCase):
         self.assertEqual([button.text for button in rows[0]], ["Details", "Notify", "AI"])
         self.assertEqual([button.text for button in rows[1]], ["Filter league"])
         self.assertEqual([button.text for button in rows[2]], ["1/44", "Next"])
+
+    def test_main_menu_keyboard_includes_webapp_button(self):
+        markup = main_menu_keyboard()
+
+        first_row = markup.inline_keyboard[0]
+        self.assertEqual(first_row[0].text, "⚽ Open Match Center")
+        self.assertIsNotNone(first_row[0].web_app)
 
     def test_today_filter_keyboard_marks_selected_league(self):
         markup = today_filter_keyboard(

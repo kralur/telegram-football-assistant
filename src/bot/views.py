@@ -19,6 +19,7 @@ def main_menu_text(timezone: str, user_label: str | None = None):
         "Football Assistant\n\n"
         f"{greeting}"
         "Choose what you want to open from the menu below.\n"
+        "Tap 'Open Match Center' to launch the Mini App inside Telegram.\n"
         f"Current timezone: {timezone}"
     )
 

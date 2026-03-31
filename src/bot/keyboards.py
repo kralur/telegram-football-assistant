@@ -1,4 +1,7 @@
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
+from src.config.settings import WEBAPP_URL
 
 TIMEZONE_OPTIONS = [
     ("UTC", "UTC"),
@@ -22,7 +25,19 @@ def main_menu_keyboard():
     kb.button(text="Timezone", callback_data="nav:timezone")
     kb.button(text="Help", callback_data="nav:help")
     kb.adjust(2)
-    return kb.as_markup()
+
+    rows = kb.export()
+    if WEBAPP_URL.startswith("https://"):
+        rows.insert(
+            0,
+            [
+                InlineKeyboardButton(
+                    text="⚽ Open Match Center",
+                    web_app=WebAppInfo(url=WEBAPP_URL),
+                )
+            ],
+        )
+    return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 def footer_navigation(kb: InlineKeyboardBuilder, include_back: bool = True):

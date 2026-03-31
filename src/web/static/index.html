@@ -2,77 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Football Assistant Match Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Football Match Center</title>
     <link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
     <div class="app-shell">
         <header class="hero">
             <div>
-                <p class="eyebrow">Telegram Mini App MVP</p>
-                <h1>Football Assistant Match Center</h1>
+                <p class="eyebrow">Telegram Mini App</p>
+                <h1>Football Match Center</h1>
                 <p class="hero-copy">
-                    Quick access to today&apos;s matches, live games, detailed stats, and favorite teams.
+                    Live action, upcoming fixtures, and standings in one clean screen.
                 </p>
             </div>
-            <div class="hero-badge" id="status-badge">Ready</div>
+            <span class="hero-status" id="hero-status">Inside Telegram</span>
         </header>
 
-        <nav class="tab-bar" aria-label="Main screens">
-            <button class="tab-button is-active" data-screen="today">Today</button>
-            <button class="tab-button" data-screen="live">Live</button>
-            <button class="tab-button" data-screen="favorites">Favorites</button>
+        <nav class="tabs" aria-label="Mini app sections">
+            <button class="tab-button is-active" data-tab="live">Live</button>
+            <button class="tab-button" data-tab="matches">Matches</button>
+            <button class="tab-button" data-tab="standings">Standings</button>
         </nav>
 
-        <section class="toolbar">
-            <div class="league-filters" id="league-filters"></div>
-            <form class="favorites-controls is-hidden" id="favorites-controls">
-                <label for="favorites-user-id">Telegram user ID</label>
-                <div class="favorites-input-row">
-                    <input id="favorites-user-id" type="number" inputmode="numeric" placeholder="e.g. 123456789">
-                    <button type="submit">Load favorites</button>
-                </div>
-            </form>
-        </section>
+        <section class="league-bar is-hidden" id="league-bar"></section>
 
-        <main class="layout">
+        <section class="notice is-hidden" id="screen-error"></section>
+        <section class="loading is-hidden" id="screen-loading">Loading football data...</section>
+
+        <main class="content-grid">
             <section class="panel">
                 <div class="panel-header">
-                    <h2 id="panel-title">Today</h2>
-                    <span class="panel-count" id="panel-count"></span>
+                    <h2 id="panel-title">Live Matches</h2>
+                    <span class="panel-meta" id="panel-meta"></span>
                 </div>
-                <div class="notice is-hidden" id="screen-error"></div>
-                <div class="loading is-hidden" id="screen-loading">Loading football data...</div>
-                <div class="match-grid" id="screen-content"></div>
-                <div class="empty-state is-hidden" id="screen-empty">
-                    No data yet. Try another league or refresh later.
-                </div>
+                <div class="cards" id="cards"></div>
+                <div class="empty-state is-hidden" id="empty-state">No data available</div>
             </section>
 
-            <aside class="details-panel">
+            <aside class="panel detail-panel">
                 <div class="panel-header">
                     <h2>Match Details</h2>
-                    <button class="ghost-button is-hidden" id="close-details">Close</button>
+                    <span class="panel-meta" id="detail-meta">Tap a card</span>
                 </div>
-
-                <div class="details-placeholder" id="details-placeholder">
-                    Pick a match from Today, Live, or Favorites to see summary, events, statistics, lineups, and player ratings.
+                <div class="detail-placeholder" id="detail-placeholder">
+                    Tap any live or upcoming match to see summary, events, statistics, lineups, and player ratings.
                 </div>
-
-                <div class="is-hidden" id="details-shell">
-                    <article class="match-summary" id="match-summary"></article>
-
-                    <nav class="detail-tabs">
+                <div class="detail-shell is-hidden" id="detail-shell">
+                    <article class="summary-card" id="summary-card"></article>
+                    <div class="detail-tabs">
                         <button class="detail-tab is-active" data-detail="events">Events</button>
                         <button class="detail-tab" data-detail="statistics">Statistics</button>
                         <button class="detail-tab" data-detail="lineups">Lineups</button>
                         <button class="detail-tab" data-detail="players">Players</button>
-                    </nav>
-
-                    <div class="notice is-hidden" id="details-error"></div>
-                    <div class="loading is-hidden" id="details-loading">Loading match details...</div>
-                    <div class="details-content" id="details-content"></div>
+                    </div>
+                    <section class="notice is-hidden" id="detail-error"></section>
+                    <section class="loading is-hidden" id="detail-loading">Loading match details...</section>
+                    <section id="detail-content"></section>
                 </div>
             </aside>
         </main>

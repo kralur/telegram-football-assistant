@@ -21,3 +21,7 @@ DEFAULT_TIMEZONE = os.getenv("DEFAULT_TIMEZONE", "UTC")
 WEBAPP_HOST = os.getenv("WEBAPP_HOST", os.getenv("HOST", "0.0.0.0"))
 WEBAPP_PORT = int(os.getenv("PORT", os.getenv("WEBAPP_PORT", "8000")))
 APP_RUNTIME = os.getenv("APP_RUNTIME", "")
+WEBAPP_URL = os.getenv(
+    "WEBAPP_URL",
+    "https://telegram-football-assistant-production.up.railway.app",
+)

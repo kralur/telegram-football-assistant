@@ -7,6 +7,7 @@ if __package__ in {None, ""}:
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from src.config.settings import WEBAPP_HOST, WEBAPP_PORT
@@ -37,6 +38,13 @@ def create_web_app(services: ServiceContainer | None = None):
                 await app.state.services.aclose()
 
     app = FastAPI(title="Football Assistant WebApp", lifespan=lifespan)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
     @app.exception_handler(FootballApiError)
@@ -51,19 +59,28 @@ def create_web_app(services: ServiceContainer | None = None):
 
     @app.get("/")
     async def root():
-        return {"status": "ok"}
-
-    @app.get("/app")
-    async def index():
         return FileResponse(STATIC_DIR / "index.html")
 
-    @app.get("/api/health")
+    @app.get("/health")
     async def health():
+        return {"status": "ok"}
+
+    @app.get("/api/health")
+    async def api_health():
         return {"ok": True}
 
     @app.get("/api/leagues")
     async def leagues():
         return {"leagues": MatchService.supported_leagues()}
+
+    def resolve_league(league_id: int | None = None):
+        leagues = MatchService.supported_leagues()
+        if league_id is None:
+            return leagues[0]
+        for league in leagues:
+            if league["id"] == league_id:
+                return league
+        return leagues[0]
 
     @app.get("/api/today")
     async def today(league_id: int | None = Query(default=None)):
@@ -77,6 +94,22 @@ def create_web_app(services: ServiceContainer | None = None):
     async def live():
         matches = await app.state.services.match_service.get_live_matches()
         return {"matches": serialize_matches(matches)}
+
+    @app.get("/live")
+    async def live_alias():
+        matches = await app.state.services.match_service.get_live_matches()
+        return {"items": serialize_matches(matches)}
+
+    @app.get("/matches")
+    async def matches():
+        matches_data = await app.state.services.match_service.get_upcoming_matches(limit=12)
+        return {"items": serialize_matches(matches_data)}
+
+    @app.get("/standings")
+    async def standings(league_id: int | None = Query(default=None)):
+        league = resolve_league(league_id)
+        rows = await app.state.services.match_service.get_standings(league["name"])
+        return {"league": league, "items": rows}
 
     @app.get("/api/match/{match_id}")
     async def match_details(match_id: int):

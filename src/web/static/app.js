@@ -1,71 +1,55 @@
 const state = {
-    screen: "today",
-    leagueId: null,
+    tab: "live",
+    selectedLeagueId: null,
     selectedMatchId: null,
     detailTab: "events",
-    favoriteUserId: window.localStorage.getItem("miniapp.favoriteUserId") || "",
 };
 
-const elements = {
-    statusBadge: document.getElementById("status-badge"),
-    tabButtons: Array.from(document.querySelectorAll(".tab-button")),
+const ui = {
+    heroStatus: document.getElementById("hero-status"),
+    tabs: Array.from(document.querySelectorAll(".tab-button")),
+    leagueBar: document.getElementById("league-bar"),
     panelTitle: document.getElementById("panel-title"),
-    panelCount: document.getElementById("panel-count"),
+    panelMeta: document.getElementById("panel-meta"),
     screenError: document.getElementById("screen-error"),
     screenLoading: document.getElementById("screen-loading"),
-    screenContent: document.getElementById("screen-content"),
-    screenEmpty: document.getElementById("screen-empty"),
-    leagueFilters: document.getElementById("league-filters"),
-    favoritesControls: document.getElementById("favorites-controls"),
-    favoritesUserId: document.getElementById("favorites-user-id"),
-    detailsPlaceholder: document.getElementById("details-placeholder"),
-    detailsShell: document.getElementById("details-shell"),
-    matchSummary: document.getElementById("match-summary"),
-    detailsError: document.getElementById("details-error"),
-    detailsLoading: document.getElementById("details-loading"),
-    detailsContent: document.getElementById("details-content"),
-    closeDetails: document.getElementById("close-details"),
+    cards: document.getElementById("cards"),
+    emptyState: document.getElementById("empty-state"),
+    detailMeta: document.getElementById("detail-meta"),
+    detailPlaceholder: document.getElementById("detail-placeholder"),
+    detailShell: document.getElementById("detail-shell"),
+    summaryCard: document.getElementById("summary-card"),
     detailTabs: Array.from(document.querySelectorAll(".detail-tab")),
+    detailError: document.getElementById("detail-error"),
+    detailLoading: document.getElementById("detail-loading"),
+    detailContent: document.getElementById("detail-content"),
 };
 
 const telegramApp = window.Telegram?.WebApp;
 if (telegramApp) {
     telegramApp.ready();
     telegramApp.expand();
-    const telegramUserId = telegramApp.initDataUnsafe?.user?.id;
-    if (telegramUserId && !state.favoriteUserId) {
-        state.favoriteUserId = String(telegramUserId);
-        window.localStorage.setItem("miniapp.favoriteUserId", state.favoriteUserId);
-    }
+    ui.heroStatus.textContent = "Opened in Telegram";
 }
 
-elements.favoritesUserId.value = state.favoriteUserId;
-
-elements.tabButtons.forEach((button) => {
-    button.addEventListener("click", () => switchScreen(button.dataset.screen));
+ui.tabs.forEach((button) => {
+    button.addEventListener("click", () => {
+        state.tab = button.dataset.tab;
+        ui.tabs.forEach((tabButton) => {
+            tabButton.classList.toggle("is-active", tabButton.dataset.tab === state.tab);
+        });
+        loadCurrentTab();
+    });
 });
 
-elements.favoritesControls.addEventListener("submit", (event) => {
-    event.preventDefault();
-    state.favoriteUserId = elements.favoritesUserId.value.trim();
-    window.localStorage.setItem("miniapp.favoriteUserId", state.favoriteUserId);
-    loadCurrentScreen();
-});
-
-elements.closeDetails.addEventListener("click", () => {
-    state.selectedMatchId = null;
-    elements.detailsShell.classList.add("is-hidden");
-    elements.closeDetails.classList.add("is-hidden");
-    elements.detailsPlaceholder.classList.remove("is-hidden");
-    elements.detailsError.classList.add("is-hidden");
-});
-
-elements.detailTabs.forEach((button) => {
+ui.detailTabs.forEach((button) => {
     button.addEventListener("click", () => {
         state.detailTab = button.dataset.detail;
-        updateDetailTabs();
+        ui.detailTabs.forEach((tabButton) => {
+            tabButton.classList.toggle("is-active", tabButton.dataset.detail === state.detailTab);
+        });
         if (state.selectedMatchId) {
-            renderMatchDetails(state.selectedMatchId);
+            openMatchDetails(state.selectedMatchId);
         }
     });
 });
@@ -75,413 +59,326 @@ async function apiGet(path) {
     const payload = await response.json();
 
     if (!response.ok) {
-        throw new Error(payload.error || payload.detail || "Failed to load football data.");
+        throw new Error(payload.error || payload.detail || "No data available");
     }
 
     return payload;
 }
 
-function setLoading(target, visible, message = "") {
-    target.textContent = message || target.textContent;
-    target.classList.toggle("is-hidden", !visible);
+function setError(message = "") {
+    ui.screenError.textContent = message;
+    ui.screenError.classList.toggle("is-hidden", !message);
 }
 
-function setError(target, message = "") {
-    target.textContent = message;
-    target.classList.toggle("is-hidden", !message);
+function setLoading(visible, message = "Loading football data...") {
+    ui.screenLoading.textContent = message;
+    ui.screenLoading.classList.toggle("is-hidden", !visible);
 }
 
-function setEmpty(visible, message = "No data yet. Try another league or refresh later.") {
-    elements.screenEmpty.textContent = message;
-    elements.screenEmpty.classList.toggle("is-hidden", !visible);
+function setEmpty(message = "No data available", visible = false) {
+    ui.emptyState.textContent = message;
+    ui.emptyState.classList.toggle("is-hidden", !visible);
 }
 
-function switchScreen(screen) {
-    state.screen = screen;
-    state.leagueId = screen === "today" ? state.leagueId : null;
-
-    elements.tabButtons.forEach((button) => {
-        button.classList.toggle("is-active", button.dataset.screen === screen);
-    });
-
-    loadCurrentScreen();
-}
-
-function updateToolbar() {
-    const showLeagueFilters = state.screen === "today";
-    const showFavoritesControls = state.screen === "favorites";
-    elements.leagueFilters.classList.toggle("is-hidden", !showLeagueFilters);
-    elements.favoritesControls.classList.toggle("is-hidden", !showFavoritesControls);
-}
-
-function updateDetailTabs() {
-    elements.detailTabs.forEach((button) => {
-        button.classList.toggle("is-active", button.dataset.detail === state.detailTab);
-    });
-}
-
-function formatKickoff(dateValue) {
-    if (!dateValue) {
+function formatKickoff(value) {
+    if (!value) {
         return "Kickoff TBD";
     }
 
-    const formatter = new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(undefined, {
         dateStyle: "medium",
         timeStyle: "short",
-    });
-
-    return formatter.format(new Date(dateValue));
+    }).format(new Date(value));
 }
 
-function statusLabel(match) {
+function badgeClass(match) {
     if (match.is_live) {
-        return match.status_long || "Live";
+        return "status-badge live";
     }
     if (match.is_finished) {
-        return match.status_long || "Finished";
+        return "status-badge finished";
     }
-    return match.status_long || "Scheduled";
+    return "status-badge";
 }
 
-function renderLeagues(leagues) {
-    elements.leagueFilters.innerHTML = "";
-    const options = [{ id: null, name: "All leagues" }, ...leagues];
-
-    options.forEach((league) => {
-        const button = document.createElement("button");
-        button.className = "chip-button";
-        button.textContent = league.name;
-        button.classList.toggle("is-active", state.leagueId === league.id);
-        button.addEventListener("click", () => {
-            state.leagueId = league.id;
-            loadToday();
-        });
-        elements.leagueFilters.appendChild(button);
-    });
+function badgeLabel(match) {
+    return match.status_long || "Unknown";
 }
 
-function createMatchCard(match) {
+function renderMatchCard(match, accentLabel = "Open details") {
     const card = document.createElement("article");
     card.className = "match-card";
-
-    const statusClass = match.is_live ? "status-pill is-live" : "status-pill";
-
     card.innerHTML = `
         <div class="match-header">
             <div>
                 <h3 class="match-title">${match.home} vs ${match.away}</h3>
-                <p class="match-meta">${match.country} • ${match.league}</p>
+                <p class="match-league">${match.country} • ${match.league}</p>
             </div>
-            <span class="${statusClass}">${statusLabel(match)}</span>
+            <span class="${badgeClass(match)}">${badgeLabel(match)}</span>
         </div>
         <p class="scoreline">${match.score}</p>
-        <p class="match-subline">${formatKickoff(match.date)}</p>
+        <p class="match-time">${formatKickoff(match.date)}</p>
         <div class="card-actions">
-            <button class="match-action">Open details</button>
-            <button class="match-action secondary">Copy match ID</button>
+            <button class="primary">${accentLabel}</button>
+            <button data-copy-id="${match.id}">Copy ID</button>
         </div>
     `;
 
     const [openButton, copyButton] = card.querySelectorAll("button");
-    openButton.addEventListener("click", () => openMatch(match.id));
+    openButton.addEventListener("click", () => openMatchDetails(match.id));
     copyButton.addEventListener("click", async () => {
         await navigator.clipboard.writeText(String(match.id));
-        elements.statusBadge.textContent = `Match #${match.id} copied`;
+        ui.heroStatus.textContent = `Match #${match.id} copied`;
     });
-
     return card;
 }
 
-function createFavoriteCard(favorite) {
-    const card = document.createElement("article");
-    card.className = "favorite-card";
+function renderLeagueBar(leagues, activeId) {
+    ui.leagueBar.innerHTML = "";
+    ui.leagueBar.classList.remove("is-hidden");
 
-    const nextMatchText = favorite.next_match
-        ? `${favorite.next_match.home} vs ${favorite.next_match.away} • ${formatKickoff(favorite.next_match.date)}`
-        : "No upcoming match available";
-    const lastMatchText = favorite.last_match
-        ? `${favorite.last_match.home} ${favorite.last_match.score} ${favorite.last_match.away}`
-        : "No last result available";
-
-    card.innerHTML = `
-        <div class="favorite-header">
-            <div>
-                <h3 class="favorite-title">${favorite.team_name}</h3>
-                <p class="favorite-meta">Next: ${nextMatchText}</p>
-                <p class="favorite-meta">Last: ${lastMatchText}</p>
-            </div>
-        </div>
-        <div class="favorite-actions">
-            <button class="favorite-action">Open next match</button>
-        </div>
-    `;
-
-    const button = card.querySelector("button");
-    button.disabled = !favorite.next_match;
-    button.addEventListener("click", () => {
-        if (favorite.next_match) {
-            openMatch(favorite.next_match.id);
-        }
+    leagues.forEach((league) => {
+        const button = document.createElement("button");
+        button.className = "league-chip";
+        button.textContent = league.name;
+        button.classList.toggle("is-active", league.id === activeId);
+        button.addEventListener("click", () => {
+            state.selectedLeagueId = league.id;
+            loadStandings();
+        });
+        ui.leagueBar.appendChild(button);
     });
-
-    return card;
 }
 
-async function openMatch(matchId) {
-    state.selectedMatchId = matchId;
-    state.detailTab = state.detailTab || "events";
-    updateDetailTabs();
-    elements.closeDetails.classList.remove("is-hidden");
-    elements.detailsPlaceholder.classList.add("is-hidden");
-    elements.detailsShell.classList.remove("is-hidden");
-    await renderMatchDetails(matchId);
+function hideLeagueBar() {
+    ui.leagueBar.classList.add("is-hidden");
+    ui.leagueBar.innerHTML = "";
 }
 
 function renderSummary(match) {
-    elements.matchSummary.innerHTML = `
+    ui.summaryCard.innerHTML = `
         <h3 class="summary-title">${match.home} vs ${match.away}</h3>
         <div class="summary-grid">
             <div><strong>League:</strong> ${match.country} • ${match.league}</div>
             <div><strong>Score:</strong> ${match.score}</div>
-            <div><strong>Status:</strong> ${statusLabel(match)}</div>
+            <div><strong>Status:</strong> ${badgeLabel(match)}</div>
             <div><strong>Kickoff:</strong> ${formatKickoff(match.date)}</div>
         </div>
     `;
 }
 
+function renderDetailBlock(title, lines) {
+    return `
+        <article class="detail-card">
+            <h3>${title}</h3>
+            <div class="detail-lines">
+                ${lines}
+            </div>
+        </article>
+    `;
+}
+
 function renderEvents(events) {
     if (!events.length) {
-        return `<div class="empty-state">No events available for this match yet.</div>`;
+        return `<div class="empty-state">No data available</div>`;
     }
 
-    return `
-        <div class="detail-section">
-            ${events.map((event) => `
-                <div class="detail-card">
-                    <div class="event-line">
-                        <strong>${event.minute ?? "-"}'</strong>
-                        <span>${event.team}</span>
-                    </div>
-                    <div>${event.type} • ${event.detail}</div>
-                    <div>${event.player}${event.assist ? ` (assist: ${event.assist})` : ""}</div>
-                </div>
-            `).join("")}
-        </div>
-    `;
+    return events.slice(0, 12).map((event) => renderDetailBlock(
+        `${event.minute ?? "-"}' • ${event.team}`,
+        `
+            <div class="detail-row"><span>${event.type}</span><strong>${event.detail || "Event"}</strong></div>
+            <div class="detail-row"><span>Player</span><strong>${event.player}</strong></div>
+            <div class="detail-row"><span>Assist</span><strong>${event.assist || "-"}</strong></div>
+        `,
+    )).join("");
 }
 
 function renderStatistics(statistics) {
     if (!statistics.length) {
-        return `<div class="empty-state">No statistics available.</div>`;
+        return `<div class="empty-state">No data available</div>`;
     }
 
-    return `
-        <div class="detail-section">
-            ${statistics.map((block) => `
-                <div class="detail-card">
-                    <h3>${block.team}</h3>
-                    ${block.entries.map((entry) => `
-                        <div class="stat-line">
-                            <span>${entry.type}</span>
-                            <strong>${entry.value}</strong>
-                        </div>
-                    `).join("")}
-                </div>
-            `).join("")}
-        </div>
-    `;
+    return statistics.map((block) => renderDetailBlock(
+        block.team,
+        block.entries.slice(0, 10).map((entry) => `
+            <div class="detail-row"><span>${entry.type}</span><strong>${entry.value}</strong></div>
+        `).join(""),
+    )).join("");
 }
 
 function renderLineups(lineups) {
     if (!lineups.length) {
-        return `<div class="empty-state">Lineups are not available yet.</div>`;
+        return `<div class="empty-state">No data available</div>`;
     }
 
-    return `
-        <div class="detail-section">
-            ${lineups.map((lineup) => `
-                <div class="detail-card">
-                    <h3>${lineup.team}</h3>
-                    <p>Formation: ${lineup.formation} • Coach: ${lineup.coach}</p>
-                    <div>
-                        <strong>Starting XI</strong>
-                        ${lineup.start_xi.map((player) => `
-                            <div class="lineup-player">
-                                <span>${player.number ?? "-"} • ${player.name}</span>
-                                <span>${player.pos ?? "N/A"}</span>
-                            </div>
-                        `).join("")}
-                    </div>
-                </div>
+    return lineups.map((lineup) => renderDetailBlock(
+        `${lineup.team} • ${lineup.formation}`,
+        `
+            <div class="detail-row"><span>Coach</span><strong>${lineup.coach}</strong></div>
+            ${lineup.start_xi.slice(0, 11).map((player) => `
+                <div class="detail-row"><span>${player.number ?? "-"}</span><strong>${player.name} ${player.pos ? `(${player.pos})` : ""}</strong></div>
             `).join("")}
-        </div>
-    `;
+        `,
+    )).join("");
 }
 
 function renderPlayers(players) {
     if (!players.length) {
-        return `<div class="empty-state">Player stats are not available.</div>`;
+        return `<div class="empty-state">No data available</div>`;
     }
 
-    return `
-        <div class="detail-section">
-            ${players.slice(0, 14).map((player) => `
-                <div class="detail-card">
-                    <div class="player-line">
-                        <strong>${player.name}</strong>
-                        <span>${player.team}</span>
-                    </div>
-                    <div class="player-line">
-                        <span>${player.position}</span>
-                        <span>Rating: ${player.rating || "N/A"}</span>
-                    </div>
-                    <div class="player-line">
-                        <span>Goals ${player.goals}</span>
-                        <span>Assists ${player.assists}</span>
-                    </div>
-                    <div class="player-line">
-                        <span>Minutes ${player.minutes ?? 0}</span>
-                        <span>Passes ${player.passes}</span>
-                    </div>
-                </div>
-            `).join("")}
-        </div>
-    `;
+    return players.slice(0, 12).map((player) => renderDetailBlock(
+        `${player.name} • ${player.team}`,
+        `
+            <div class="detail-row"><span>Position</span><strong>${player.position}</strong></div>
+            <div class="detail-row"><span>Rating</span><strong>${player.rating || "N/A"}</strong></div>
+            <div class="detail-row"><span>Goals / Assists</span><strong>${player.goals} / ${player.assists}</strong></div>
+            <div class="detail-row"><span>Minutes</span><strong>${player.minutes ?? 0}</strong></div>
+        `,
+    )).join("");
 }
 
-async function renderMatchDetails(matchId) {
-    setError(elements.detailsError, "");
-    setLoading(elements.detailsLoading, true, "Loading match details...");
-    elements.detailsContent.innerHTML = "";
+async function openMatchDetails(matchId) {
+    state.selectedMatchId = matchId;
+    ui.detailPlaceholder.classList.add("is-hidden");
+    ui.detailShell.classList.remove("is-hidden");
+    ui.detailMeta.textContent = `Match #${matchId}`;
+    ui.detailError.classList.add("is-hidden");
+    ui.detailLoading.classList.remove("is-hidden");
+    ui.detailContent.innerHTML = "";
 
     try {
-        const [summaryPayload, sectionPayload] = await Promise.all([
+        const [summaryPayload, detailsPayload] = await Promise.all([
             apiGet(`/api/match/${matchId}`),
             apiGet(`/api/match/${matchId}/${state.detailTab}`),
         ]);
 
         renderSummary(summaryPayload.match);
-
         if (state.detailTab === "events") {
-            elements.detailsContent.innerHTML = renderEvents(sectionPayload.events);
+            ui.detailContent.innerHTML = renderEvents(detailsPayload.events);
         } else if (state.detailTab === "statistics") {
-            elements.detailsContent.innerHTML = renderStatistics(sectionPayload.statistics);
+            ui.detailContent.innerHTML = renderStatistics(detailsPayload.statistics);
         } else if (state.detailTab === "lineups") {
-            elements.detailsContent.innerHTML = renderLineups(sectionPayload.lineups);
+            ui.detailContent.innerHTML = renderLineups(detailsPayload.lineups);
         } else {
-            elements.detailsContent.innerHTML = renderPlayers(sectionPayload.players);
+            ui.detailContent.innerHTML = renderPlayers(detailsPayload.players);
         }
     } catch (error) {
-        setError(elements.detailsError, error.message);
+        ui.detailError.textContent = "No data available";
+        ui.detailError.classList.remove("is-hidden");
     } finally {
-        setLoading(elements.detailsLoading, false);
-    }
-}
-
-async function loadToday() {
-    updateToolbar();
-    elements.panelTitle.textContent = state.leagueId ? "Today filtered" : "Today";
-    setError(elements.screenError, "");
-    setLoading(elements.screenLoading, true, "Loading today's matches...");
-    setEmpty(false);
-    elements.screenContent.innerHTML = "";
-
-    try {
-        const [leaguesPayload, todayPayload] = await Promise.all([
-            apiGet("/api/leagues"),
-            apiGet(`/api/today${state.leagueId ? `?league_id=${state.leagueId}` : ""}`),
-        ]);
-
-        renderLeagues(leaguesPayload.leagues);
-        elements.panelCount.textContent = `${todayPayload.matches.length} matches`;
-
-        if (!todayPayload.matches.length) {
-            setEmpty(true, "No matches for this filter right now.");
-            return;
-        }
-
-        todayPayload.matches.slice(0, 12).forEach((match) => {
-            elements.screenContent.appendChild(createMatchCard(match));
-        });
-    } catch (error) {
-        setError(elements.screenError, error.message);
-    } finally {
-        setLoading(elements.screenLoading, false);
+        ui.detailLoading.classList.add("is-hidden");
     }
 }
 
 async function loadLive() {
-    updateToolbar();
-    elements.panelTitle.textContent = "Live";
-    elements.panelCount.textContent = "";
-    setError(elements.screenError, "");
-    setLoading(elements.screenLoading, true, "Loading live matches...");
-    setEmpty(false);
-    elements.screenContent.innerHTML = "";
+    hideLeagueBar();
+    ui.panelTitle.textContent = "Live Matches";
+    ui.panelMeta.textContent = "";
+    setError("");
+    setLoading(true, "Loading live matches...");
+    setEmpty("", false);
+    ui.cards.innerHTML = "";
 
     try {
-        const payload = await apiGet("/api/live");
-        elements.panelCount.textContent = `${payload.matches.length} matches`;
-
-        if (!payload.matches.length) {
-            setEmpty(true, "No live matches at the moment.");
+        const payload = await apiGet("/live");
+        const items = payload.items || [];
+        ui.panelMeta.textContent = `${items.length} live`;
+        if (!items.length) {
+            setEmpty("No data available", true);
             return;
         }
-
-        payload.matches.forEach((match) => {
-            elements.screenContent.appendChild(createMatchCard(match));
-        });
-    } catch (error) {
-        setError(elements.screenError, error.message);
+        items.forEach((match) => ui.cards.appendChild(renderMatchCard(match)));
+    } catch (_) {
+        setError("No data available");
     } finally {
-        setLoading(elements.screenLoading, false);
+        setLoading(false);
     }
 }
 
-async function loadFavorites() {
-    updateToolbar();
-    elements.panelTitle.textContent = "Favorites";
-    elements.panelCount.textContent = state.favoriteUserId ? `User ${state.favoriteUserId}` : "";
-    setError(elements.screenError, "");
-    setLoading(elements.screenLoading, true, "Loading favorite teams...");
-    setEmpty(false);
-    elements.screenContent.innerHTML = "";
-
-    if (!state.favoriteUserId) {
-        setLoading(elements.screenLoading, false);
-        setEmpty(true, "Enter a Telegram user ID to load favorites.");
-        return;
-    }
+async function loadMatches() {
+    hideLeagueBar();
+    ui.panelTitle.textContent = "Upcoming Matches";
+    ui.panelMeta.textContent = "";
+    setError("");
+    setLoading(true, "Loading upcoming matches...");
+    setEmpty("", false);
+    ui.cards.innerHTML = "";
 
     try {
-        const payload = await apiGet(`/api/favorites/${state.favoriteUserId}`);
-        elements.panelCount.textContent = `${payload.favorites.length} teams`;
-
-        if (!payload.favorites.length) {
-            setEmpty(true, "This user has no favorite teams yet.");
+        const payload = await apiGet("/matches");
+        const items = payload.items || [];
+        ui.panelMeta.textContent = `${items.length} upcoming`;
+        if (!items.length) {
+            setEmpty("No data available", true);
             return;
         }
-
-        payload.favorites.forEach((favorite) => {
-            elements.screenContent.appendChild(createFavoriteCard(favorite));
-        });
-    } catch (error) {
-        setError(elements.screenError, error.message);
+        items.forEach((match) => ui.cards.appendChild(renderMatchCard(match, "Open summary")));
+    } catch (_) {
+        setError("No data available");
     } finally {
-        setLoading(elements.screenLoading, false);
+        setLoading(false);
     }
 }
 
-async function loadCurrentScreen() {
-    elements.statusBadge.textContent = "Syncing";
-    if (state.screen === "today") {
-        await loadToday();
-    } else if (state.screen === "live") {
+async function loadStandings() {
+    ui.panelTitle.textContent = "Standings";
+    ui.panelMeta.textContent = "";
+    setError("");
+    setLoading(true, "Loading standings...");
+    setEmpty("", false);
+    ui.cards.innerHTML = "";
+
+    try {
+        const [leaguesPayload, standingsPayload] = await Promise.all([
+            apiGet("/api/leagues"),
+            apiGet(`/standings${state.selectedLeagueId ? `?league_id=${state.selectedLeagueId}` : ""}`),
+        ]);
+
+        const leagues = leaguesPayload.leagues || [];
+        const league = standingsPayload.league;
+        state.selectedLeagueId = league?.id || state.selectedLeagueId || leagues[0]?.id || null;
+        renderLeagueBar(leagues, state.selectedLeagueId);
+        ui.panelMeta.textContent = league?.name || "";
+
+        const items = standingsPayload.items || [];
+        if (!items.length) {
+            setEmpty("No data available", true);
+            return;
+        }
+
+        items.slice(0, 12).forEach((row) => {
+            const card = document.createElement("article");
+            card.className = "match-card";
+            card.innerHTML = `
+                <div class="match-header">
+                    <div>
+                        <h3 class="match-title">${row.rank}. ${row.team}</h3>
+                        <p class="match-league">${league?.name || "League table"}</p>
+                    </div>
+                    <span class="status-badge">${row.points} pts</span>
+                </div>
+                <p class="match-time">Played: ${row.played}</p>
+            `;
+            ui.cards.appendChild(card);
+        });
+    } catch (_) {
+        setError("No data available");
+        hideLeagueBar();
+    } finally {
+        setLoading(false);
+    }
+}
+
+async function loadCurrentTab() {
+    ui.heroStatus.textContent = telegramApp ? "Opened in Telegram" : "Browser preview";
+    if (state.tab === "live") {
         await loadLive();
+    } else if (state.tab === "matches") {
+        await loadMatches();
     } else {
-        await loadFavorites();
+        await loadStandings();
     }
-    elements.statusBadge.textContent = "Ready";
 }
 
-loadCurrentScreen();
+loadCurrentTab();

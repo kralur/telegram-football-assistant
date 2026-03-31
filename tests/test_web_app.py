@@ -49,8 +49,17 @@ class FakeMatchService:
     async def get_live_matches(self):
         return self.matches[:1]
 
+    async def get_upcoming_matches(self, limit: int = 10):
+        return self.matches
+
     async def get_match(self, match_id: int):
         return next((match for match in self.matches if match["id"] == match_id), None)
+
+    async def get_standings(self, league_query: str | None = None):
+        return [
+            {"rank": 1, "team": "Arsenal", "points": 76, "played": 30},
+            {"rank": 2, "team": "Liverpool", "points": 74, "played": 30},
+        ]
 
     async def get_match_events(self, match_id: int):
         return [{"minute": 10, "team": "Arsenal", "type": "Goal", "detail": "Normal Goal", "player": "Saka"}]
@@ -125,12 +134,35 @@ class WebAppTests(unittest.TestCase):
         self.assertEqual(len(payload["matches"]), 1)
         self.assertTrue(payload["matches"][0]["home"], "Arsenal")
 
-    def test_root_endpoint_returns_status_payload(self):
+    def test_root_endpoint_returns_html(self):
         with self.build_client() as client:
             response = client.get("/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {"status": "ok"})
+        self.assertIn("Football Match Center", response.text)
+
+    def test_live_alias_returns_items(self):
+        with self.build_client() as client:
+            response = client.get("/live")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["items"][0]["home"], "Arsenal")
+
+    def test_matches_endpoint_returns_upcoming_items(self):
+        with self.build_client() as client:
+            response = client.get("/matches")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()["items"]), 2)
+
+    def test_standings_endpoint_returns_league_and_items(self):
+        with self.build_client() as client:
+            response = client.get("/standings?league_id=39")
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["league"]["id"], 39)
+        self.assertEqual(payload["items"][0]["team"], "Arsenal")
 
     def test_favorites_endpoint_returns_overview(self):
         with self.build_client() as client:
