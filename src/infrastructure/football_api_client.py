@@ -65,16 +65,33 @@ class FootballApiClient:
                 params,
                 details,
             )
-            if "request" in details.lower() and "limit" in details.lower():
-                raise FootballApiError(
-                    "API request limit reached for today. Please try again later.",
-                    details=details,
-                )
             raise FootballApiError(
-                "Football data provider returned an error. Please try again later.",
+                self._build_user_error_message(details),
                 details=details,
             )
         return data.get("response", [])
+
+    @staticmethod
+    def _build_user_error_message(details: str):
+        lowered = details.lower()
+        if "request" in lowered and "limit" in lowered:
+            return (
+                "Daily API request limit reached. Football data is temporarily unavailable. "
+                "Please try again later."
+            )
+        if "season" in lowered and "free plans do not have access" in lowered:
+            return (
+                "The latest season is not available on the current API plan. "
+                "The bot will try an older supported season where possible."
+            )
+        if "next parameter" in lowered or "last parameter" in lowered:
+            return (
+                "This match lookup is limited on the current API plan. "
+                "The bot will use a fallback method where possible."
+            )
+        if "plan:" in lowered:
+            return "This football data is not available on the current API plan."
+        return "Football data provider returned an error. Please try again later."
 
     async def get_today_fixtures(self):
         return await self.get_fixtures_by_date(datetime.now(UTC).strftime("%Y-%m-%d"))

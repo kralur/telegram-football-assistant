@@ -166,7 +166,7 @@ def notification_unavailable_text():
 
 def service_error_text(message: str):
     return (
-        "Data is temporarily unavailable\n\n"
+        "Football data unavailable\n\n"
         f"{message}\n\n"
         "You can go back or return to the main menu."
     )

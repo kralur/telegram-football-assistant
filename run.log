@@ -1,35 +1,35 @@
-2026-03-31 11:37:27,248 | INFO | football_bot | Starting Football Assistant...
-2026-03-31 11:37:27,252 | INFO | football_bot | Database initialized
-2026-03-31 11:37:27,806 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
-2026-03-31 11:37:27,809 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
-2026-03-31 11:37:27,810 | INFO | apscheduler.scheduler | Added job "SchedulerService.sync_notifications" to job store "default"
-2026-03-31 11:37:27,811 | INFO | apscheduler.scheduler | Added job "SchedulerService.daily_summary" to job store "default"
-2026-03-31 11:37:27,811 | INFO | apscheduler.scheduler | Scheduler started
-2026-03-31 11:37:27,811 | INFO | football_bot | Scheduler started
-2026-03-31 11:37:27,811 | INFO | football_bot | Bot is running...
-2026-03-31 11:37:27,811 | INFO | aiogram.dispatcher | Start polling
-2026-03-31 11:37:28,144 | INFO | aiogram.dispatcher | Run polling for bot @football_assistant_kralur_bot id=8278692462 - 'Football Assistant'
-2026-03-31 11:37:57,818 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:38:27 +05)" (scheduled at 2026-03-31 11:37:57.806868+05:00)
-2026-03-31 11:37:58,260 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:37:58,266 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
-2026-03-31 11:37:58,389 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:37:58,390 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
-2026-03-31 11:37:58,391 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
+2026-03-31 11:44:17,534 | INFO | football_bot | Starting Football Assistant...
+2026-03-31 11:44:17,537 | INFO | football_bot | Database initialized
+2026-03-31 11:44:18,111 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-31 11:44:18,113 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-31 11:44:18,114 | INFO | apscheduler.scheduler | Added job "SchedulerService.sync_notifications" to job store "default"
+2026-03-31 11:44:18,114 | INFO | apscheduler.scheduler | Added job "SchedulerService.daily_summary" to job store "default"
+2026-03-31 11:44:18,114 | INFO | apscheduler.scheduler | Scheduler started
+2026-03-31 11:44:18,115 | INFO | football_bot | Scheduler started
+2026-03-31 11:44:18,115 | INFO | football_bot | Bot is running...
+2026-03-31 11:44:18,115 | INFO | aiogram.dispatcher | Start polling
+2026-03-31 11:44:18,444 | INFO | aiogram.dispatcher | Run polling for bot @football_assistant_kralur_bot id=8278692462 - 'Football Assistant'
+2026-03-31 11:44:48,122 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:45:18 +05)" (scheduled at 2026-03-31 11:44:48.111122+05:00)
+2026-03-31 11:44:48,453 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:44:48,458 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:44:48,578 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:44:48,583 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:44:48,584 | ERROR | football_bot | Scheduler sync failed: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
 Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 164, in get_team_matches
     raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 134, in get_next_fixtures_by_team_id
     return await self._get(
            ^^^^^^^^^^^^^^^^
     ...<2 lines>...
     )
     ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
     raise FootballApiError(
     ...<2 lines>...
     )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+src.infrastructure.football_api_client.FootballApiError: This match lookup is limited on the current API plan. The bot will use a fallback method where possible.
 
 During handling of the above exception, another exception occurred:
 
@@ -45,39 +45,39 @@ Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 261, in _fallback_team_matches
     raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 103, in get_fixtures_by_team_and_season
     return await self._get(
            ^^^^^^^^^^^^^^^^
     ...<2 lines>...
     )
     ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
     raise FootballApiError(
     ...<2 lines>...
     )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-2026-03-31 11:37:58,395 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:38:27 +05)" executed successfully
-2026-03-31 11:38:27,822 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:38:57 +05)" (scheduled at 2026-03-31 11:38:27.806868+05:00)
-2026-03-31 11:38:28,168 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:38:28,172 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
-2026-03-31 11:38:28,294 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
-2026-03-31 11:38:28,299 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
-2026-03-31 11:38:28,299 | ERROR | football_bot | Scheduler sync failed: Football data provider returned an error. Please try again later.
+src.infrastructure.football_api_client.FootballApiError: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+2026-03-31 11:44:48,589 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:45:18 +05)" executed successfully
+2026-03-31 11:45:18,122 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:45:48 +05)" (scheduled at 2026-03-31 11:45:18.111122+05:00)
+2026-03-31 11:45:18,475 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:45:18,481 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:45:18,605 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:45:18,611 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:45:18,612 | ERROR | football_bot | Scheduler sync failed: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
 Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 164, in get_team_matches
     raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 117, in get_next_fixtures_by_team_id
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 134, in get_next_fixtures_by_team_id
     return await self._get(
            ^^^^^^^^^^^^^^^^
     ...<2 lines>...
     )
     ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
     raise FootballApiError(
     ...<2 lines>...
     )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
+src.infrastructure.football_api_client.FootballApiError: This match lookup is limited on the current API plan. The bot will use a fallback method where possible.
 
 During handling of the above exception, another exception occurred:
 
@@ -93,15 +93,303 @@ Traceback (most recent call last):
   File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 261, in _fallback_team_matches
     raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 86, in get_fixtures_by_team_and_season
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 103, in get_fixtures_by_team_and_season
     return await self._get(
            ^^^^^^^^^^^^^^^^
     ...<2 lines>...
     )
     ^
-  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 73, in _get
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
     raise FootballApiError(
     ...<2 lines>...
     )
-src.infrastructure.football_api_client.FootballApiError: Football data provider returned an error. Please try again later.
-2026-03-31 11:38:28,302 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:38:57 +05)" executed successfully
+src.infrastructure.football_api_client.FootballApiError: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+2026-03-31 11:45:18,617 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:45:48 +05)" executed successfully
+2026-03-31 11:45:48,125 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:46:18 +05)" (scheduled at 2026-03-31 11:45:48.111122+05:00)
+2026-03-31 11:45:48,455 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:45:48,461 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:45:48,584 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:45:48,588 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:45:48,589 | ERROR | football_bot | Scheduler sync failed: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 164, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 134, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: This match lookup is limited on the current API plan. The bot will use a fallback method where possible.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
+    await self.notify_service.sync_favorites_for_user(user_id)
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 169, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 261, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 103, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+2026-03-31 11:45:48,592 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:46:18 +05)" executed successfully
+2026-03-31 11:46:18,119 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:46:48 +05)" (scheduled at 2026-03-31 11:46:18.111122+05:00)
+2026-03-31 11:46:18,464 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:46:18,466 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:46:18,583 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:46:18,585 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:46:18,585 | ERROR | football_bot | Scheduler sync failed: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 164, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 134, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: This match lookup is limited on the current API plan. The bot will use a fallback method where possible.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
+    await self.notify_service.sync_favorites_for_user(user_id)
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 169, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 261, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 103, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+2026-03-31 11:46:18,587 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:46:48 +05)" executed successfully
+2026-03-31 11:46:48,118 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:47:18 +05)" (scheduled at 2026-03-31 11:46:48.111122+05:00)
+2026-03-31 11:46:48,437 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:46:48,439 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:46:48,566 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:46:48,567 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:46:48,568 | ERROR | football_bot | Scheduler sync failed: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 164, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 134, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: This match lookup is limited on the current API plan. The bot will use a fallback method where possible.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
+    await self.notify_service.sync_favorites_for_user(user_id)
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 169, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 261, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 103, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+2026-03-31 11:46:48,570 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:47:18 +05)" executed successfully
+2026-03-31 11:47:18,114 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:47:48 +05)" (scheduled at 2026-03-31 11:47:18.111122+05:00)
+2026-03-31 11:47:18,419 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:47:18,422 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:47:18,537 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:47:18,541 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:47:18,541 | ERROR | football_bot | Scheduler sync failed: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 164, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 134, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: This match lookup is limited on the current API plan. The bot will use a fallback method where possible.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
+    await self.notify_service.sync_favorites_for_user(user_id)
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 169, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 261, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 103, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+2026-03-31 11:47:18,544 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:47:48 +05)" executed successfully
+2026-03-31 11:47:48,122 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:48:18 +05)" (scheduled at 2026-03-31 11:47:48.111122+05:00)
+2026-03-31 11:47:48,455 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:47:48,459 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:47:48,579 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:47:48,584 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:47:48,585 | ERROR | football_bot | Scheduler sync failed: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 164, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 134, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: This match lookup is limited on the current API plan. The bot will use a fallback method where possible.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
+    await self.notify_service.sync_favorites_for_user(user_id)
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 169, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 261, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 103, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+2026-03-31 11:47:48,588 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:48:18 +05)" executed successfully
+2026-03-31 11:48:18,115 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:48:48 +05)" (scheduled at 2026-03-31 11:48:18.111122+05:00)
+2026-03-31 11:48:18,543 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:48:18,547 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 11:48:18,671 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2025&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 11:48:18,674 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'season': 2025, 'timezone': 'UTC'} errors=plan: Free plans do not have access to this season, try from 2022 to 2024.
+2026-03-31 11:48:18,674 | ERROR | football_bot | Scheduler sync failed: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 164, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 134, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: This match lookup is limited on the current API plan. The bot will use a fallback method where possible.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 40, in sync_notifications
+    await self.notify_service.sync_favorites_for_user(user_id)
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 169, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 261, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 103, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 68, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: The latest season is not available on the current API plan. The bot will try an older supported season where possible.
+2026-03-31 11:48:18,678 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 11:48:48 +05)" executed successfully

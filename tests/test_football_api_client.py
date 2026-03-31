@@ -52,9 +52,29 @@ class FootballApiClientTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(
             str(context.exception),
-            "API request limit reached for today. Please try again later.",
+            "Daily API request limit reached. Football data is temporarily unavailable. Please try again later.",
         )
         self.assertTrue(client.logger.warnings)
+
+    def test_build_user_error_message_for_season_limit(self):
+        message = FootballApiClient._build_user_error_message(
+            "plan: Free plans do not have access to this season, try from 2022 to 2024."
+        )
+
+        self.assertEqual(
+            message,
+            "The latest season is not available on the current API plan. The bot will try an older supported season where possible.",
+        )
+
+    def test_build_user_error_message_for_plan_restriction(self):
+        message = FootballApiClient._build_user_error_message(
+            "plan: Free plans do not have access to this endpoint."
+        )
+
+        self.assertEqual(
+            message,
+            "This football data is not available on the current API plan.",
+        )
 
 
 if __name__ == "__main__":

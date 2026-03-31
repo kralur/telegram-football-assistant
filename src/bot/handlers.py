@@ -178,6 +178,9 @@ async def build_screen(user_id: int, screen: str, payload: dict):
     if screen == "main":
         return main_menu_text(timezone), main_menu_keyboard(), {}
 
+    if screen == "service_error":
+        return service_error_text(payload.get("message", "Football data is temporarily unavailable.")), back_keyboard(), payload
+
     if screen == "help":
         return help_text(), back_keyboard(), payload
 
@@ -390,192 +393,208 @@ async def callback_router(call: CallbackQuery):
 
     await call.answer()
 
-    if action == "nav:today":
-        await render_callback(call, "today")
-    elif action == "nav:live":
-        await render_callback(call, "live")
-    elif action == "nav:today_filter":
-        await render_callback(
-            call,
-            "today_filter",
-            {
-                "matches": payload.get("matches"),
-                "league_id": payload.get("league_id"),
-                "league_name": payload.get("league_name", "All leagues"),
-                "page": payload.get("page", 0),
-            },
+    try:
+        if action == "nav:today":
+            await render_callback(call, "today")
+        elif action == "nav:live":
+            await render_callback(call, "live")
+        elif action == "nav:today_filter":
+            await render_callback(
+                call,
+                "today_filter",
+                {
+                    "matches": payload.get("matches"),
+                    "league_id": payload.get("league_id"),
+                    "league_name": payload.get("league_name", "All leagues"),
+                    "page": payload.get("page", 0),
+                },
+            )
+        elif action == "nav:standings_leagues":
+            await render_callback(call, "standings_leagues")
+        elif action == "nav:scorers_leagues":
+            await render_callback(call, "scorers_leagues")
+        elif action == "nav:search":
+            await render_callback(call, "search_prompt")
+        elif action == "nav:favorites":
+            await render_callback(call, "favorites")
+        elif action == "nav:timezone":
+            await render_callback(call, "timezone")
+        elif action == "nav:help":
+            await render_callback(call, "help")
+        elif action == "nav:main":
+            await render_anchor(
+                user_id=user_id,
+                bot=call.bot,
+                chat_id=call.message.chat.id,
+                screen="main",
+                payload={},
+                push=True,
+            )
+        elif action == "nav:back":
+            previous = sessions.back(user_id)
+            await render_anchor(
+                user_id=user_id,
+                bot=call.bot,
+                chat_id=call.message.chat.id,
+                screen=previous["screen"],
+                payload=previous["payload"],
+                push=False,
+            )
+        elif action.startswith("page:"):
+            next_page = int(action.split(":")[-1])
+            next_payload = dict(payload)
+            next_payload["page"] = next_page
+            await render_anchor(
+                user_id=user_id,
+                bot=call.bot,
+                chat_id=call.message.chat.id,
+                screen=screen,
+                payload=next_payload,
+                push=False,
+            )
+        elif action.startswith("league:standings:"):
+            league = league_by_id(int(action.split(":")[-1]))
+            await render_callback(call, "standings", {"league": league, "page": 0})
+        elif action.startswith("league:scorers:"):
+            league = league_by_id(int(action.split(":")[-1]))
+            await render_callback(call, "scorers", {"league": league, "page": 0})
+        elif action == "today_filter:all":
+            await render_callback(
+                call,
+                "today",
+                {"matches": payload.get("matches"), "page": 0, "league_id": None, "league_name": "All leagues"},
+            )
+        elif action.startswith("today_filter:"):
+            league = league_by_id(int(action.split(":")[-1]))
+            await render_callback(
+                call,
+                "today",
+                {
+                    "matches": payload.get("matches"),
+                    "page": 0,
+                    "league_id": league["id"],
+                    "league_name": league["name"],
+                },
+            )
+        elif action.startswith("timezone:set:"):
+            timezone_index = int(action.split(":")[-1])
+            timezone_value = TIMEZONE_OPTIONS[timezone_index][0]
+            services["users_repository"].set_timezone(user_id, timezone_value)
+            await render_anchor(
+                user_id=user_id,
+                bot=call.bot,
+                chat_id=call.message.chat.id,
+                screen="timezone",
+                payload={},
+                push=False,
+            )
+        elif action.startswith("notify:match:"):
+            match_id = int(action.split(":")[-1])
+            match = await services["notify_service"].subscribe(user_id, match_id)
+            if match:
+                await render_callback(call, "notification_added", {"match": match})
+            else:
+                await render_callback(call, "notification_unavailable", {})
+        elif action.startswith("match:open:"):
+            match_id = int(action.split(":")[-1])
+            match = await services["match_service"].get_match(match_id)
+            if match:
+                await render_callback(call, "match_details", {"match": match})
+        elif action.startswith("match:events:"):
+            match_id = int(action.split(":")[-1])
+            match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
+            if match is None:
+                match = await services["match_service"].get_match(match_id)
+            if match:
+                await render_callback(call, "match_events", {"match": match})
+        elif action.startswith("match:statistics:"):
+            match_id = int(action.split(":")[-1])
+            match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
+            if match is None:
+                match = await services["match_service"].get_match(match_id)
+            if match:
+                await render_callback(call, "match_statistics", {"match": match})
+        elif action.startswith("match:lineups:"):
+            match_id = int(action.split(":")[-1])
+            match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
+            if match is None:
+                match = await services["match_service"].get_match(match_id)
+            if match:
+                await render_callback(call, "match_lineups", {"match": match})
+        elif action.startswith("match:players:"):
+            match_id = int(action.split(":")[-1])
+            match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
+            if match is None:
+                match = await services["match_service"].get_match(match_id)
+            if match:
+                await render_callback(call, "match_players", {"match": match})
+        elif action.startswith("analysis:match:"):
+            match_id = int(action.split(":")[-1])
+            match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
+            if match is None:
+                match = await services["match_service"].get_match(match_id)
+            if match:
+                analysis = await services["analysis_service"].analyze(match)
+                await render_callback(call, "analysis", {"match": match, "analysis": analysis})
+        elif action.startswith("favorite:add:"):
+            index = int(action.split(":")[-1])
+            results = payload.get("results", [])
+            if 0 <= index < len(results):
+                team = results[index]
+                services["favorites_service"].add_team(
+                    user_id=user_id,
+                    team_name=team["name"],
+                    team_id=team["id"],
+                )
+                await services["notify_service"].sync_favorites_for_user(user_id)
+            await render_callback(call, "favorites")
+        elif action.startswith("favorite:remove:"):
+            index = int(action.split(":")[-1])
+            favorites = payload.get("favorites", [])
+            if 0 <= index < len(favorites):
+                favorite = favorites[index]
+                services["favorites_service"].remove_team(
+                    user_id=user_id,
+                    team_name=favorite["team_name"],
+                    team_id=favorite.get("team_id"),
+                )
+            await render_callback(call, "favorites")
+        elif action.startswith("favorite:open_next:"):
+            index = int(action.split(":")[-1])
+            favorites = payload.get("favorites", [])
+            if 0 <= index < len(favorites):
+                favorite = favorites[index]
+                next_match = favorite.get("next_match")
+                if next_match and next_match.get("id") is not None:
+                    match = await services["match_service"].get_match(next_match["id"])
+                    await render_callback(call, "match_details", {"match": match or next_match})
+        elif action.startswith("favorite:notify_next:"):
+            index = int(action.split(":")[-1])
+            favorites = payload.get("favorites", [])
+            if 0 <= index < len(favorites):
+                favorite = favorites[index]
+                next_match = favorite.get("next_match")
+                if next_match and next_match.get("id") is not None:
+                    match = await services["notify_service"].subscribe(user_id, next_match["id"])
+                    if match:
+                        await render_callback(call, "notification_added", {"match": match})
+                    else:
+                        await render_callback(call, "notification_unavailable", {})
+    except FootballApiError as exc:
+        logger.warning(
+            "Callback action failed for user=%s action=%s: %s",
+            user_id,
+            action,
+            exc.details,
         )
-    elif action == "nav:standings_leagues":
-        await render_callback(call, "standings_leagues")
-    elif action == "nav:scorers_leagues":
-        await render_callback(call, "scorers_leagues")
-    elif action == "nav:search":
-        await render_callback(call, "search_prompt")
-    elif action == "nav:favorites":
-        await render_callback(call, "favorites")
-    elif action == "nav:timezone":
-        await render_callback(call, "timezone")
-    elif action == "nav:help":
-        await render_callback(call, "help")
-    elif action == "nav:main":
         await render_anchor(
             user_id=user_id,
             bot=call.bot,
             chat_id=call.message.chat.id,
-            screen="main",
-            payload={},
+            screen="service_error",
+            payload={"message": exc.user_message},
             push=True,
         )
-    elif action == "nav:back":
-        previous = sessions.back(user_id)
-        await render_anchor(
-            user_id=user_id,
-            bot=call.bot,
-            chat_id=call.message.chat.id,
-            screen=previous["screen"],
-            payload=previous["payload"],
-            push=False,
-        )
-    elif action.startswith("page:"):
-        next_page = int(action.split(":")[-1])
-        next_payload = dict(payload)
-        next_payload["page"] = next_page
-        await render_anchor(
-            user_id=user_id,
-            bot=call.bot,
-            chat_id=call.message.chat.id,
-            screen=screen,
-            payload=next_payload,
-            push=False,
-        )
-    elif action.startswith("league:standings:"):
-        league = league_by_id(int(action.split(":")[-1]))
-        await render_callback(call, "standings", {"league": league, "page": 0})
-    elif action.startswith("league:scorers:"):
-        league = league_by_id(int(action.split(":")[-1]))
-        await render_callback(call, "scorers", {"league": league, "page": 0})
-    elif action == "today_filter:all":
-        await render_callback(
-            call,
-            "today",
-            {"matches": payload.get("matches"), "page": 0, "league_id": None, "league_name": "All leagues"},
-        )
-    elif action.startswith("today_filter:"):
-        league = league_by_id(int(action.split(":")[-1]))
-        await render_callback(
-            call,
-            "today",
-            {
-                "matches": payload.get("matches"),
-                "page": 0,
-                "league_id": league["id"],
-                "league_name": league["name"],
-            },
-        )
-    elif action.startswith("timezone:set:"):
-        timezone_index = int(action.split(":")[-1])
-        timezone_value = TIMEZONE_OPTIONS[timezone_index][0]
-        services["users_repository"].set_timezone(user_id, timezone_value)
-        await render_anchor(
-            user_id=user_id,
-            bot=call.bot,
-            chat_id=call.message.chat.id,
-            screen="timezone",
-            payload={},
-            push=False,
-        )
-    elif action.startswith("notify:match:"):
-        match_id = int(action.split(":")[-1])
-        match = await services["notify_service"].subscribe(user_id, match_id)
-        if match:
-            await render_callback(call, "notification_added", {"match": match})
-        else:
-            await render_callback(call, "notification_unavailable", {})
-    elif action.startswith("match:open:"):
-        match_id = int(action.split(":")[-1])
-        match = await services["match_service"].get_match(match_id)
-        if match:
-            await render_callback(call, "match_details", {"match": match})
-    elif action.startswith("match:events:"):
-        match_id = int(action.split(":")[-1])
-        match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
-        if match is None:
-            match = await services["match_service"].get_match(match_id)
-        if match:
-            await render_callback(call, "match_events", {"match": match})
-    elif action.startswith("match:statistics:"):
-        match_id = int(action.split(":")[-1])
-        match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
-        if match is None:
-            match = await services["match_service"].get_match(match_id)
-        if match:
-            await render_callback(call, "match_statistics", {"match": match})
-    elif action.startswith("match:lineups:"):
-        match_id = int(action.split(":")[-1])
-        match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
-        if match is None:
-            match = await services["match_service"].get_match(match_id)
-        if match:
-            await render_callback(call, "match_lineups", {"match": match})
-    elif action.startswith("match:players:"):
-        match_id = int(action.split(":")[-1])
-        match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
-        if match is None:
-            match = await services["match_service"].get_match(match_id)
-        if match:
-            await render_callback(call, "match_players", {"match": match})
-    elif action.startswith("analysis:match:"):
-        match_id = int(action.split(":")[-1])
-        match = payload.get("match") if payload.get("match", {}).get("id") == match_id else None
-        if match is None:
-            match = await services["match_service"].get_match(match_id)
-        if match:
-            analysis = await services["analysis_service"].analyze(match)
-            await render_callback(call, "analysis", {"match": match, "analysis": analysis})
-    elif action.startswith("favorite:add:"):
-        index = int(action.split(":")[-1])
-        results = payload.get("results", [])
-        if 0 <= index < len(results):
-            team = results[index]
-            services["favorites_service"].add_team(
-                user_id=user_id,
-                team_name=team["name"],
-                team_id=team["id"],
-            )
-            await services["notify_service"].sync_favorites_for_user(user_id)
-        await render_callback(call, "favorites")
-    elif action.startswith("favorite:remove:"):
-        index = int(action.split(":")[-1])
-        favorites = payload.get("favorites", [])
-        if 0 <= index < len(favorites):
-            favorite = favorites[index]
-            services["favorites_service"].remove_team(
-                user_id=user_id,
-                team_name=favorite["team_name"],
-                team_id=favorite.get("team_id"),
-            )
-        await render_callback(call, "favorites")
-    elif action.startswith("favorite:open_next:"):
-        index = int(action.split(":")[-1])
-        favorites = payload.get("favorites", [])
-        if 0 <= index < len(favorites):
-            favorite = favorites[index]
-            next_match = favorite.get("next_match")
-            if next_match and next_match.get("id") is not None:
-                match = await services["match_service"].get_match(next_match["id"])
-                await render_callback(call, "match_details", {"match": match or next_match})
-    elif action.startswith("favorite:notify_next:"):
-        index = int(action.split(":")[-1])
-        favorites = payload.get("favorites", [])
-        if 0 <= index < len(favorites):
-            favorite = favorites[index]
-            next_match = favorite.get("next_match")
-            if next_match and next_match.get("id") is not None:
-                match = await services["notify_service"].subscribe(user_id, next_match["id"])
-                if match:
-                    await render_callback(call, "notification_added", {"match": match})
-                else:
-                    await render_callback(call, "notification_unavailable", {})
 
 
 @router.message()
@@ -585,12 +604,23 @@ async def search_input_handler(message: Message):
         return
 
     query = (message.text or "").strip()
-    results = await services["search_service"].search_teams(query)
-    await render_anchor(
-        user_id=user_id,
-        bot=message.bot,
-        chat_id=message.chat.id,
-        screen="search_results",
-        payload={"query": query, "results": results, "page": 0},
-        push=True,
-    )
+    try:
+        results = await services["search_service"].search_teams(query)
+        await render_anchor(
+            user_id=user_id,
+            bot=message.bot,
+            chat_id=message.chat.id,
+            screen="search_results",
+            payload={"query": query, "results": results, "page": 0},
+            push=True,
+        )
+    except FootballApiError as exc:
+        logger.warning("Search failed for user=%s query=%s: %s", user_id, query, exc.details)
+        await render_anchor(
+            user_id=user_id,
+            bot=message.bot,
+            chat_id=message.chat.id,
+            screen="service_error",
+            payload={"message": exc.user_message},
+            push=True,
+        )
