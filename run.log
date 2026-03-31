@@ -1,0 +1,257 @@
+2026-03-31 14:21:12,179 | INFO | football_bot | Starting Football Assistant...
+2026-03-31 14:21:12,184 | INFO | football_bot | Database initialized
+2026-03-31 14:21:12,905 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-31 14:21:12,908 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-31 14:21:12,912 | INFO | apscheduler.scheduler | Added job "SchedulerService.sync_notifications" to job store "default"
+2026-03-31 14:21:12,913 | INFO | apscheduler.scheduler | Added job "SchedulerService.daily_summary" to job store "default"
+2026-03-31 14:21:12,914 | INFO | apscheduler.scheduler | Scheduler started
+2026-03-31 14:21:12,915 | INFO | football_bot | Scheduler started
+2026-03-31 14:21:12,915 | INFO | football_bot | Bot is running...
+2026-03-31 14:21:12,917 | INFO | aiogram.dispatcher | Start polling
+2026-03-31 14:21:13,380 | INFO | aiogram.dispatcher | Run polling for bot @football_assistant_kralur_bot id=8278692462 - 'Football Assistant'
+2026-03-31 14:21:14,785 | INFO | aiogram.event | Update id=867726049 is handled. Duration 1278 ms by bot id=8278692462
+2026-03-31 14:21:42,910 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:22:12 +05)" (scheduled at 2026-03-31 14:21:42.904641+05:00)
+2026-03-31 14:21:43,585 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:43,590 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:21:43,711 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:43,833 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:43,957 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:44,101 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=FC+Santiago "HTTP/1.1 200 OK"
+2026-03-31 14:21:44,231 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:44,236 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 22055, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:21:44,358 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:44,484 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:44,616 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:44,766 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/teams?search=Guyana+W "HTTP/1.1 200 OK"
+2026-03-31 14:21:44,897 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:44,900 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 18259, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:21:45,023 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:45,151 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:45,272 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:21:45,275 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 18259, 'season': 2022, 'timezone': 'UTC'} errors=rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:21:45,276 | INFO | football_bot | Falling back to older team season for team=18259 after error: rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:21:45,277 | ERROR | football_bot | Scheduler sync failed: Daily API request limit reached. Football data is temporarily unavailable. Please try again later.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 174, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 145, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 79, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: This match lookup is limited on the current API plan. The bot will use a fallback method where possible.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 44, in sync_notifications
+    await self.notify_service.sync_favorites_for_user(user_id)
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 179, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 305, in _fallback_team_matches
+    raise last_exc
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 275, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 114, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 79, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: Daily API request limit reached. Football data is temporarily unavailable. Please try again later.
+2026-03-31 14:21:45,286 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:22:12 +05)" executed successfully
+2026-03-31 14:22:12,906 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:22:42 +05)" (scheduled at 2026-03-31 14:22:12.904641+05:00)
+2026-03-31 14:22:13,306 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:22:13,311 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 18259, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:22:13,436 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:22:13,565 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:22:13,696 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:22:13,822 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:22:13,825 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:22:13,953 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:22:14,088 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:22:14,224 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:22:14,363 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?id=1468715&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:22:14,526 | INFO | football_bot | Notification sent for user=5044343262 match=1468715
+2026-03-31 14:22:14,527 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:22:42 +05)" executed successfully
+2026-03-31 14:22:42,919 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:23:12 +05)" (scheduled at 2026-03-31 14:22:42.904641+05:00)
+2026-03-31 14:22:42,932 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:23:12 +05)" executed successfully
+2026-03-31 14:23:12,917 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:23:42 +05)" (scheduled at 2026-03-31 14:23:12.904641+05:00)
+2026-03-31 14:23:12,929 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:23:42 +05)" executed successfully
+2026-03-31 14:23:42,910 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:24:12 +05)" (scheduled at 2026-03-31 14:23:42.904641+05:00)
+2026-03-31 14:23:42,920 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:24:12 +05)" executed successfully
+2026-03-31 14:24:12,915 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:24:42 +05)" (scheduled at 2026-03-31 14:24:12.904641+05:00)
+2026-03-31 14:24:12,936 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:24:42 +05)" executed successfully
+2026-03-31 14:24:42,913 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:25:12 +05)" (scheduled at 2026-03-31 14:24:42.904641+05:00)
+2026-03-31 14:24:42,921 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:25:12 +05)" executed successfully
+2026-03-31 14:25:12,917 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:25:42 +05)" (scheduled at 2026-03-31 14:25:12.904641+05:00)
+2026-03-31 14:25:12,927 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:25:42 +05)" executed successfully
+2026-03-31 14:25:42,910 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:26:12 +05)" (scheduled at 2026-03-31 14:25:42.904641+05:00)
+2026-03-31 14:25:42,920 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:26:12 +05)" executed successfully
+2026-03-31 14:26:12,915 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:26:42 +05)" (scheduled at 2026-03-31 14:26:12.904641+05:00)
+2026-03-31 14:26:12,925 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:26:42 +05)" executed successfully
+2026-03-31 14:26:42,921 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:27:12 +05)" (scheduled at 2026-03-31 14:26:42.904641+05:00)
+2026-03-31 14:26:42,954 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:27:12 +05)" executed successfully
+2026-03-31 14:27:12,909 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:27:42 +05)" (scheduled at 2026-03-31 14:27:12.904641+05:00)
+2026-03-31 14:27:13,339 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:13,345 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 26524, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:27:13,477 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:13,604 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:13,729 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=26524&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:13,851 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:13,857 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 22055, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:27:13,978 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:14,106 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:14,240 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=22055&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:14,363 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:14,368 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 18259, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:27:14,487 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:14,613 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:14,740 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=18259&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:14,863 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:14,870 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:27:14,989 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:15,115 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:15,120 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'season': 2023, 'timezone': 'UTC'} errors=rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:27:15,121 | INFO | football_bot | Falling back to older team season for team=541 after error: rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:27:15,238 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:15,246 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'season': 2022, 'timezone': 'UTC'} errors=rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:27:15,247 | INFO | football_bot | Falling back to older team season for team=541 after error: rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:27:15,248 | ERROR | football_bot | Scheduler sync failed: Daily API request limit reached. Football data is temporarily unavailable. Please try again later.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 174, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 145, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 79, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: This match lookup is limited on the current API plan. The bot will use a fallback method where possible.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 44, in sync_notifications
+    await self.notify_service.sync_favorites_for_user(user_id)
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 179, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 305, in _fallback_team_matches
+    raise last_exc
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 275, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 114, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 79, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: Daily API request limit reached. Football data is temporarily unavailable. Please try again later.
+2026-03-31 14:27:15,254 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:27:42 +05)" executed successfully
+2026-03-31 14:27:42,911 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:28:12 +05)" (scheduled at 2026-03-31 14:27:42.904641+05:00)
+2026-03-31 14:27:43,240 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:43,245 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:27:43,366 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:43,373 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'season': 2024, 'timezone': 'UTC'} errors=rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:27:43,374 | INFO | football_bot | Falling back to older team season for team=541 after error: rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:27:43,495 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:43,500 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'season': 2023, 'timezone': 'UTC'} errors=rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:27:43,501 | INFO | football_bot | Falling back to older team season for team=541 after error: rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:27:43,621 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:27:43,629 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'season': 2022, 'timezone': 'UTC'} errors=rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:27:43,630 | INFO | football_bot | Falling back to older team season for team=541 after error: rateLimit: Too many requests. Your rate limit is 10 requests per minute.
+2026-03-31 14:27:43,631 | ERROR | football_bot | Scheduler sync failed: Daily API request limit reached. Football data is temporarily unavailable. Please try again later.
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 174, in get_team_matches
+    raw_matches = await self.api_client.get_next_fixtures_by_team_id(team_id, limit=limit)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 145, in get_next_fixtures_by_team_id
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 79, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: This match lookup is limited on the current API plan. The bot will use a fallback method where possible.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\scheduler_service.py", line 44, in sync_notifications
+    await self.notify_service.sync_favorites_for_user(user_id)
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\notify_service.py", line 59, in sync_favorites_for_user
+    matches = await self.match_service.get_team_matches(team_id, limit=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 179, in get_team_matches
+    matches = await self._fallback_team_matches(team_id, limit=limit, direction="next")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 305, in _fallback_team_matches
+    raise last_exc
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\services\match_service.py", line 275, in _fallback_team_matches
+    raw_matches = await self.api_client.get_fixtures_by_team_and_season(team_id, season)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 114, in get_fixtures_by_team_and_season
+    return await self._get(
+           ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\umid\Desktop\diploma project\telegram-football-assistant-main-v2\telegram-football-assistant-main\src\infrastructure\football_api_client.py", line 79, in _get
+    raise FootballApiError(
+    ...<2 lines>...
+    )
+src.infrastructure.football_api_client.FootballApiError: Daily API request limit reached. Football data is temporarily unavailable. Please try again later.
+2026-03-31 14:27:43,636 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:28:12 +05)" executed successfully
+2026-03-31 14:28:12,921 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:28:42 +05)" (scheduled at 2026-03-31 14:28:12.904641+05:00)
+2026-03-31 14:28:13,252 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&next=1&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:28:13,257 | WARNING | football_bot | Football API returned payload errors endpoint=/fixtures params={'team': 541, 'next': 1, 'timezone': 'UTC'} errors=plan: Free plans do not have access to the Next parameter.
+2026-03-31 14:28:13,384 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2024&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:28:13,519 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2023&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:28:13,656 | INFO | httpx | HTTP Request: GET https://v3.football.api-sports.io/fixtures?team=541&season=2022&timezone=UTC "HTTP/1.1 200 OK"
+2026-03-31 14:28:13,669 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:28:42 +05)" executed successfully
+2026-03-31 14:28:42,918 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:29:12 +05)" (scheduled at 2026-03-31 14:28:42.904641+05:00)
+2026-03-31 14:28:42,925 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:29:12 +05)" executed successfully
+2026-03-31 14:29:12,918 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:29:42 +05)" (scheduled at 2026-03-31 14:29:12.904641+05:00)
+2026-03-31 14:29:12,927 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:29:42 +05)" executed successfully
+2026-03-31 14:29:42,916 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:30:12 +05)" (scheduled at 2026-03-31 14:29:42.904641+05:00)
+2026-03-31 14:29:42,928 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:30:12 +05)" executed successfully
+2026-03-31 14:30:12,911 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:30:42 +05)" (scheduled at 2026-03-31 14:30:12.904641+05:00)
+2026-03-31 14:30:12,920 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:30:42 +05)" executed successfully
+2026-03-31 14:30:42,912 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:31:12 +05)" (scheduled at 2026-03-31 14:30:42.904641+05:00)
+2026-03-31 14:30:42,922 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:31:12 +05)" executed successfully
+2026-03-31 14:31:12,915 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:31:42 +05)" (scheduled at 2026-03-31 14:31:12.904641+05:00)
+2026-03-31 14:31:12,926 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:31:42 +05)" executed successfully
+2026-03-31 14:31:42,915 | INFO | apscheduler.executors.default | Running job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:32:12 +05)" (scheduled at 2026-03-31 14:31:42.904641+05:00)
+2026-03-31 14:31:42,924 | INFO | apscheduler.executors.default | Job "SchedulerService.sync_notifications (trigger: interval[0:00:30], next run at: 2026-03-31 14:32:12 +05)" executed successfully

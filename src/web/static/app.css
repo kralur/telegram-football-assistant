@@ -138,6 +138,11 @@ button {
     font-weight: 700;
 }
 
+.detail-tab:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 .league-bar {
     margin-bottom: 14px;
 }

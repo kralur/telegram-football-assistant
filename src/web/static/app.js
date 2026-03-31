@@ -3,7 +3,7 @@ const state = {
     selectedLeagueId: null,
     selectedMatchId: null,
     selectedMatchSeed: null,
-    detailTab: "events",
+    detailTab: "summary",
     telegramUserId: null,
 };
 
@@ -50,6 +50,9 @@ ui.tabs.forEach((button) => {
 
 ui.detailTabs.forEach((button) => {
     button.addEventListener("click", () => {
+        if (button.disabled) {
+            return;
+        }
         state.detailTab = button.dataset.detail;
         ui.detailTabs.forEach((tabButton) => {
             tabButton.classList.toggle("is-active", tabButton.dataset.detail === state.detailTab);
@@ -90,6 +93,35 @@ function setMetrics(mode, focus, tip) {
     ui.metricMode.textContent = mode;
     ui.metricFocus.textContent = focus;
     ui.metricTip.textContent = tip;
+}
+
+function syncDetailTabButtons() {
+    ui.detailTabs.forEach((tabButton) => {
+        tabButton.classList.toggle("is-active", tabButton.dataset.detail === state.detailTab);
+    });
+}
+
+function setDetailTabsDisabled(disabled) {
+    ui.detailTabs.forEach((tabButton) => {
+        const isSummary = tabButton.dataset.detail === "summary";
+        tabButton.disabled = disabled && !isSummary;
+    });
+}
+
+function resetDetailPanel(message = "Tap any match card to see summary, events, statistics, lineups, and player ratings.") {
+    state.selectedMatchId = null;
+    state.selectedMatchSeed = null;
+    state.detailTab = "summary";
+    syncDetailTabButtons();
+    setDetailTabsDisabled(false);
+    ui.detailMeta.textContent = "Tap a card";
+    ui.detailPlaceholder.textContent = message;
+    ui.detailPlaceholder.classList.remove("is-hidden");
+    ui.detailShell.classList.add("is-hidden");
+    ui.detailError.classList.add("is-hidden");
+    ui.detailLoading.classList.add("is-hidden");
+    ui.detailContent.innerHTML = "";
+    ui.summaryCard.innerHTML = "";
 }
 
 function formatKickoff(value) {
@@ -298,6 +330,10 @@ function renderPlayers(players) {
 async function openMatchDetails(matchId, seedMatch = null) {
     state.selectedMatchId = matchId;
     state.selectedMatchSeed = seedMatch;
+    const hasFallbackOnlyData = Boolean(seedMatch && matchId >= 900000);
+    state.detailTab = hasFallbackOnlyData ? "summary" : state.detailTab;
+    syncDetailTabButtons();
+    setDetailTabsDisabled(hasFallbackOnlyData);
     ui.detailPlaceholder.classList.add("is-hidden");
     ui.detailShell.classList.remove("is-hidden");
     ui.detailMeta.textContent = `Match #${matchId}`;
@@ -306,12 +342,15 @@ async function openMatchDetails(matchId, seedMatch = null) {
     ui.detailContent.innerHTML = "";
 
     try {
-        const [summaryPayload, detailsPayload] = await Promise.all([
-            apiGet(`/api/match/${matchId}`),
-            apiGet(`/api/match/${matchId}/${state.detailTab}`),
-        ]);
-
+        const summaryPayload = await apiGet(`/api/match/${matchId}`);
         renderSummary(summaryPayload.match);
+
+        if (state.detailTab === "summary") {
+            ui.detailContent.innerHTML = `<div class="empty-state">Use the tabs above to open events, statistics, lineups, or player ratings.</div>`;
+            return;
+        }
+
+        const detailsPayload = await apiGet(`/api/match/${matchId}/${state.detailTab}`);
         if (state.detailTab === "events") {
             ui.detailContent.innerHTML = renderEvents(detailsPayload.events);
         } else if (state.detailTab === "statistics") {
@@ -324,7 +363,12 @@ async function openMatchDetails(matchId, seedMatch = null) {
     } catch (_) {
         if (seedMatch) {
             renderSummary(seedMatch);
-            ui.detailContent.innerHTML = `<div class="empty-state">Detailed ${state.detailTab} data is unavailable for featured fallback matches.</div>`;
+            ui.detailContent.innerHTML = state.detailTab === "summary"
+                ? `<div class="empty-state">This is a featured showcase match. Summary is available even when the provider has no live payload.</div>`
+                : `<div class="empty-state">Detailed ${state.detailTab} data is unavailable for featured fallback matches.</div>`;
+            if (hasFallbackOnlyData) {
+                setDetailTabsDisabled(true);
+            }
         }
         ui.detailError.textContent = seedMatch
             ? "Showing summary from fallback showcase data."
@@ -336,6 +380,7 @@ async function openMatchDetails(matchId, seedMatch = null) {
 }
 
 async function loadLive() {
+    resetDetailPanel("Pick a live or featured card to open the match summary.");
     hideLeagueBar();
     ui.panelTitle.textContent = "Live Matches";
     ui.panelMeta.textContent = "";
@@ -362,6 +407,7 @@ async function loadLive() {
 }
 
 async function loadMatches() {
+    resetDetailPanel("Pick an upcoming or featured match to open the summary first.");
     hideLeagueBar();
     ui.panelTitle.textContent = "Upcoming Matches";
     ui.panelMeta.textContent = "";
@@ -394,6 +440,7 @@ async function loadMatches() {
 }
 
 async function loadStandings() {
+    resetDetailPanel("Standings do not auto-open match details. Switch back to Matches or Live to inspect a game.");
     ui.panelTitle.textContent = "Standings";
     ui.panelMeta.textContent = "";
     setMetrics("Mini App", "League tables", "Choose a league chip to switch the table");
@@ -444,6 +491,7 @@ async function loadStandings() {
 }
 
 async function loadFavorites() {
+    resetDetailPanel("Open a favorite team card to jump into its next match.");
     hideLeagueBar();
     ui.panelTitle.textContent = "Favorites";
     ui.panelMeta.textContent = "";

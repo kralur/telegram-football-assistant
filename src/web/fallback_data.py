@@ -109,6 +109,30 @@ def featured_standings(league: dict):
             {"rank": 3, "team": "Atletico Madrid", "points": 65, "played": 30},
             {"rank": 4, "team": "Athletic Club", "points": 57, "played": 30},
         ],
+        135: [
+            {"rank": 1, "team": "Inter", "points": 73, "played": 30},
+            {"rank": 2, "team": "Juventus", "points": 69, "played": 30},
+            {"rank": 3, "team": "Milan", "points": 64, "played": 30},
+            {"rank": 4, "team": "Napoli", "points": 58, "played": 30},
+        ],
+        78: [
+            {"rank": 1, "team": "Bayern Munich", "points": 72, "played": 29},
+            {"rank": 2, "team": "Bayer Leverkusen", "points": 68, "played": 29},
+            {"rank": 3, "team": "Borussia Dortmund", "points": 61, "played": 29},
+            {"rank": 4, "team": "RB Leipzig", "points": 56, "played": 29},
+        ],
+        61: [
+            {"rank": 1, "team": "PSG", "points": 71, "played": 28},
+            {"rank": 2, "team": "Monaco", "points": 58, "played": 28},
+            {"rank": 3, "team": "Marseille", "points": 55, "played": 28},
+            {"rank": 4, "team": "Lille", "points": 51, "played": 28},
+        ],
+        2: [
+            {"rank": 1, "team": "Liverpool", "points": 18, "played": 8},
+            {"rank": 2, "team": "Real Madrid", "points": 17, "played": 8},
+            {"rank": 3, "team": "Bayern Munich", "points": 16, "played": 8},
+            {"rank": 4, "team": "Barcelona", "points": 15, "played": 8},
+        ],
     }
     return templates.get(
         league["id"],

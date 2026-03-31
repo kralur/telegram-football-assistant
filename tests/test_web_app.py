@@ -167,6 +167,19 @@ class WebAppTests(unittest.TestCase):
         self.assertEqual(payload["items"][0]["team"], "Arsenal")
         self.assertEqual(payload["source"], "api")
 
+    def test_standings_endpoint_uses_named_featured_table_for_supported_league(self):
+        class EmptyStandingsMatchService(FakeMatchService):
+            async def get_standings(self, league_query: str | None = None):
+                raise FootballApiError("No standings", details="provider issue")
+
+        with self.build_client(match_service=EmptyStandingsMatchService()) as client:
+            response = client.get("/standings?league_id=135")
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["source"], "featured")
+        self.assertEqual(payload["items"][0]["team"], "Inter")
+
     def test_matches_endpoint_uses_featured_fallback_when_api_is_empty(self):
         class EmptyMatchService(FakeMatchService):
             async def get_today_matches(self):
