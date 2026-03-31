@@ -31,6 +31,10 @@ class SchedulerService:
         )
         self.scheduler.start()
 
+    def stop(self):
+        if self.scheduler.running:
+            self.scheduler.shutdown(wait=False)
+
     async def sync_notifications(self):
         try:
             for user_id in self.users_repository.get_all():

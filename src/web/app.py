@@ -10,7 +10,8 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from src.config.settings import WEBAPP_HOST, WEBAPP_PORT
+from src.bot.runtime import BotRuntime
+from src.config.settings import TELEGRAM_BOT_TOKEN, WEBAPP_HOST, WEBAPP_PORT
 from src.core.container import ServiceContainer, build_service_container
 from src.infrastructure.football_api_client import FootballApiError
 from src.services.match_service import MatchService
@@ -21,19 +22,26 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 def create_web_app(services: ServiceContainer | None = None):
     owned_container = services is None
-    state = {"services": services}
+    state = {"services": services, "bot_runtime": None}
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         if state["services"] is None:
-            state["services"] = build_service_container(include_analysis=False)
+            state["services"] = build_service_container(include_analysis=True)
 
         app.state.services = state["services"]
         app.state.services.logger.info("Mini app backend ready")
 
+        if TELEGRAM_BOT_TOKEN:
+            state["bot_runtime"] = BotRuntime(app.state.services)
+            await state["bot_runtime"].start()
+            app.state.bot_runtime = state["bot_runtime"]
+
         try:
             yield
         finally:
+            if state["bot_runtime"] is not None:
+                await state["bot_runtime"].stop()
             if owned_container and app.state.services is not None:
                 await app.state.services.aclose()
 

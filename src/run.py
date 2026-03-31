@@ -13,7 +13,7 @@ from src.config.settings import WEBAPP_HOST, WEBAPP_PORT
 
 def resolve_runtime():
     app_runtime = os.getenv("APP_RUNTIME", "").strip().lower()
-    if app_runtime in {"web", "bot"}:
+    if app_runtime in {"web", "bot", "all"}:
         return app_runtime
     if os.getenv("PORT") or WEBAPP_PORT:
         return "web"
@@ -24,6 +24,10 @@ def main():
     runtime = resolve_runtime()
 
     if runtime == "web":
+        uvicorn.run("src.web.app:app", host=WEBAPP_HOST, port=WEBAPP_PORT, reload=False)
+        return
+
+    if runtime == "all":
         uvicorn.run("src.web.app:app", host=WEBAPP_HOST, port=WEBAPP_PORT, reload=False)
         return
 

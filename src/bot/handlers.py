@@ -534,6 +534,11 @@ async def callback_router(call: CallbackQuery):
             if match is None:
                 match = await services["match_service"].get_match(match_id)
             if match:
+                if services["analysis_service"] is None:
+                    raise FootballApiError(
+                        "AI analysis is not configured for this deployment.",
+                        details="OPENAI_API_KEY is missing",
+                    )
                 analysis = await services["analysis_service"].analyze(match)
                 await render_callback(call, "analysis", {"match": match, "analysis": analysis})
         elif action.startswith("favorite:add:"):
